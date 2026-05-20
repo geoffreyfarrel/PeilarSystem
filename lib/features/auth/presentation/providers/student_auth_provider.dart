@@ -5,12 +5,14 @@ class StudentAccount {
   final String studentId;
   final String name;
   final String email;
+  final String major;
   final bool isBound;
 
   const StudentAccount({
     required this.studentId,
     required this.name,
     required this.email,
+    required this.major,
     this.isBound = true,
   });
 }
