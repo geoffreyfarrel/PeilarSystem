@@ -336,7 +336,7 @@ class _HeroHeader extends StatelessWidget {
               );
             },
           ),
-          Container(color: Colors.black.withOpacity(0.42)),
+          Container(color: Colors.black.withValues(alpha: 0.42)),
           SafeArea(
             bottom: false,
             child: Stack(
@@ -384,7 +384,7 @@ class _HeroHeader extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(99),
                           ),
                           child: Text(

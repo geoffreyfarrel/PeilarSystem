@@ -4,6 +4,9 @@ import 'package:peilar_superapp/features/landing/presentation/pages/feature_deta
 import 'package:peilar_superapp/features/auth/presentation/pages/student_bind_page.dart';
 import 'package:peilar_superapp/features/itinerary/presentation/pages/ai_itinerary_page.dart';
 import 'package:peilar_superapp/features/itinerary/presentation/pages/itinerary_result_page.dart';
+import 'package:peilar_superapp/features/qr_scanner/presentation/pages/qr_scanner_page.dart';
+import 'package:peilar_superapp/features/qr_scanner/presentation/pages/payment_page.dart';
+import 'package:peilar_superapp/features/qr_scanner/presentation/pages/payment_result_page.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -34,6 +37,18 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/itinerary-result',
       builder: (context, state) => const ItineraryResultPage(),
+    ),
+    GoRoute(
+      path: '/qr-scanner',
+      builder: (context, state) => const QrScannerPage(),
+    ),
+    GoRoute(
+      path: '/payment',
+      builder: (context, state) => const PaymentPage(),
+    ),
+    GoRoute(
+      path: '/payment-result',
+      builder: (context, state) => const PaymentResultPage(),
     ),
   ],
 );

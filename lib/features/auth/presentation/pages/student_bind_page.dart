@@ -21,7 +21,6 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
 
   static const Color darkGreen = Color(0xFF515F49);
   static const Color green = Color(0xFF79926C);
-  static const Color blue = Color(0xFF4EA3E7);
 
   @override
   void dispose() {

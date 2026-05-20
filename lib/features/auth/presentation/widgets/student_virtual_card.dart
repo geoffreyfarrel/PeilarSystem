@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../landing/presentation/providers/language_provider.dart';
 
 class StudentVirtualCard extends ConsumerWidget {
@@ -22,7 +23,12 @@ class StudentVirtualCard extends ConsumerWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       backgroundColor: Colors.white,
-      builder: (_) => const _CardActionModal(),
+      builder: (_) => _CardActionModal(
+        onScanQr: () {
+          Navigator.pop(context);
+          context.go('/qr-scanner');
+        },
+      ),
     );
   }
 
@@ -291,7 +297,9 @@ class _PinwheelPainter extends CustomPainter {
 }
 
 class _CardActionModal extends ConsumerWidget {
-  const _CardActionModal();
+  final VoidCallback onScanQr;
+
+  const _CardActionModal({required this.onScanQr});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -333,6 +341,7 @@ class _CardActionModal extends ConsumerWidget {
                   icon: Icons.qr_code_scanner,
                   label: texts['qrScanner']!,
                   color: const Color(0xFF4EA3E7),
+                  onTap: onScanQr,
                 ),
               ),
               const SizedBox(width: 16),
@@ -355,35 +364,40 @@ class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
+  final VoidCallback? onTap;
 
   const _ActionButton({
     required this.icon,
     required this.label,
     required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 22),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.25), width: 1.5),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 34),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w800,
-              fontSize: 14,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 22),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withValues(alpha: 0.25), width: 1.5),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 34),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

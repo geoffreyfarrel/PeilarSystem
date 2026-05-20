@@ -43,6 +43,27 @@ AppLanguage.en: {
 },
 ```
 
+## Development Workflow
+
+### Testing & Linting
+Before committing any changes:
+- **Always run tests** to ensure code correctness
+- **Always run linting** to maintain code quality and style consistency
+- Both tests and linting must pass before commits are created
+
+### Commit Message Standards
+- **Commit messages are determined by Claude** based on the changes made
+- Follow conventional commit format: `<type>: <description>`
+  - `feat:` - New feature
+  - `fix:` - Bug fix
+  - `refactor:` - Code refactoring without feature/bug changes
+  - `docs:` - Documentation updates
+  - `style:` - Code style changes (formatting, etc.)
+  - `test:` - Test additions or updates
+  - `chore:` - Build process, dependencies, or tooling changes
+- Keep descriptions concise and imperative (e.g., "add QR scanner" not "added QR scanner")
+- Include relevant context or issue references when applicable
+
 ## Project Structure
 
 - **Frontend**: Flutter (Dart)

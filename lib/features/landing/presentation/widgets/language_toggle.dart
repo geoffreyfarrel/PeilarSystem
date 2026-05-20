@@ -17,7 +17,7 @@ class LanguageToggle extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: darkMode ? Colors.white.withOpacity(0.18) : Colors.grey.shade200,
+        color: darkMode ? Colors.white.withValues(alpha: 0.18) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(
@@ -61,7 +61,6 @@ class _ToggleItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedColor = darkMode ? Colors.white : const Color(0xFF2F2929);
-    final unselectedColor = darkMode ? Colors.white70 : Colors.grey.shade600;
 
     return GestureDetector(
       onTap: onTap,
@@ -77,7 +76,7 @@ class _ToggleItem extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : selectedColor.withOpacity(0.85),
+            color: selected ? Colors.white : selectedColor.withValues(alpha: 0.85),
             fontSize: 12,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
           ),

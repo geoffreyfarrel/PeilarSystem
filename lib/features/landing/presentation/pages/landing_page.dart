@@ -288,7 +288,7 @@ class _AutoPromoCarouselState extends State<_AutoPromoCarousel> {
               width: active ? 18 : 7,
               height: 5,
               decoration: BoxDecoration(
-                color: active ? Colors.white : Colors.white.withOpacity(0.35),
+                color: active ? Colors.white : Colors.white.withValues(alpha: 0.35),
                 borderRadius: BorderRadius.circular(99),
               ),
             );
@@ -355,7 +355,7 @@ class _PromoCard extends StatelessWidget {
                 child: Icon(
                   imageIcon,
                   size: 64,
-                  color: Colors.black.withOpacity(0.12),
+                  color: Colors.black.withValues(alpha: 0.12),
                 ),
               ),
               Positioned(
@@ -602,14 +602,20 @@ class _MainWhiteSection extends StatelessWidget {
               children: mainActions.map((item) {
                 return _MainActionButton(
                   item: item,
-                  onTap: () => onOpenFeature(
-                    context,
-                    id: item.id,
-                    title: item.label,
-                    subtitle: item.subtitle,
-                    icon: item.icon,
-                    studentOnly: item.studentOnly,
-                  ),
+                  onTap: () {
+                    if (item.id == 'scan-transfer') {
+                      context.go('/qr-scanner');
+                    } else {
+                      onOpenFeature(
+                        context,
+                        id: item.id,
+                        title: item.label,
+                        subtitle: item.subtitle,
+                        icon: item.icon,
+                        studentOnly: item.studentOnly,
+                      );
+                    }
+                  },
                 );
               }).toList(),
             ),
@@ -805,7 +811,7 @@ class _MainActionButton extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.13),
+                        color: Colors.black.withValues(alpha: 0.13),
                         blurRadius: 16,
                         offset: const Offset(0, 7),
                       ),
