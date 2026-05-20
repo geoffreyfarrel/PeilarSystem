@@ -1,10 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
-enum AppLanguage {
-  zh,
-  en,
-}
+enum AppLanguage { zh, en }
 
 final languageProvider = StateProvider<AppLanguage>((ref) {
   return AppLanguage.zh;
@@ -118,6 +115,15 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'studentEmail': '學校信箱',
     'loginBind': '登入並綁定',
     'logout': '登出',
+
+    'easyCardTitle': '悠遊卡 EasyCard',
+    'adultCard': '普通 Adult',
+    'easyCardCompany': '悠遊卡公司',
+    'easyCardCorpEn': 'EASYCARD CORP.',
+    'useVirtualCard': '使用虛擬卡',
+    'chooseCardUsage': '選擇如何使用您的虛擬卡',
+    'qrScanner': 'QR Scanner',
+    'nfc': 'NFC',
   },
 
   AppLanguage.en: {
@@ -173,16 +179,19 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'travelRecommendation': 'Travel Recommendation',
 
     'feature': 'Feature',
-    'featureSubtitle': 'This is a clickable prototype page for the selected module.',
+    'featureSubtitle':
+        'This is a clickable prototype page for the selected module.',
     'clickableDemo': 'Clickable Demo',
-    'clickableDemoDesc': 'This page is a working placeholder for the selected module.',
+    'clickableDemoDesc':
+        'This page is a working placeholder for the selected module.',
     'studentOnlyTitle': 'Student ID Required',
     'studentOnlyDesc': 'This feature unlocks after Student ID verification.',
     'ttsDemoTitle': 'Concise TTS',
     'ttsDemoDesc': 'Example voice output: Shuttle arrives in 4 minutes.',
     'tourismLoop': 'Sanxia Tourism Loop',
     'tourismLoopTitle': 'Sanxia Tourism Loop',
-    'tourismLoopDesc': 'AI recommends local food, heritage sites, and hiking trails.',
+    'tourismLoopDesc':
+        'AI recommends local food, heritage sites, and hiking trails.',
     'openAiPlanner': 'Open AI Planner',
     'attendanceDesc': 'Check class attendance after Student ID verification.',
     'secondhandBooksDesc': 'Verified student-to-student textbook trading.',
@@ -214,7 +223,8 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'backHome': 'Back Home',
     'bindStudent': 'Bind Student ID',
     'studentLoginTitle': 'Student Login',
-    'studentLoginDesc': 'Bind your NTPU Student ID to unlock student-only features.',
+    'studentLoginDesc':
+        'Bind your NTPU Student ID to unlock student-only features.',
     'studentBoundTitle': 'Student ID Bound',
     'studentBoundDesc': 'You can now access student-only campus services.',
     'studentId': 'Student ID',
@@ -222,6 +232,14 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'studentEmail': 'School Email',
     'loginBind': 'Login & Bind',
     'logout': 'Logout',
-    
+
+    'easyCardTitle': 'Easy Card EasyCard',
+    'adultCard': 'General Adult',
+    'easyCardCompany': 'EasyCard Corp',
+    'easyCardCorpEn': 'EASYCARD CORP.',
+    'useVirtualCard': 'Use Virtual Card',
+    'chooseCardUsage': 'Choose how to use your virtual card',
+    'qrScanner': 'QR Scanner',
+    'nfc': 'NFC',
   },
 };

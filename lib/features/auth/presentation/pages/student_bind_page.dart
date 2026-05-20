@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../landing/presentation/providers/language_provider.dart';
 import '../../../landing/presentation/widgets/language_toggle.dart';
 import '../providers/student_auth_provider.dart';
+import '../widgets/student_virtual_card.dart';
 
 class StudentBindPage extends ConsumerStatefulWidget {
   const StudentBindPage({super.key});
@@ -16,6 +17,7 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
   final studentIdController = TextEditingController();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
+  final majorController = TextEditingController();
 
   static const Color darkGreen = Color(0xFF515F49);
   static const Color green = Color(0xFF79926C);
@@ -26,6 +28,7 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
     studentIdController.dispose();
     nameController.dispose();
     emailController.dispose();
+    majorController.dispose();
     super.dispose();
   }
 
@@ -33,12 +36,11 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
     final studentId = studentIdController.text.trim();
     final name = nameController.text.trim();
     final email = emailController.text.trim();
+    final major = majorController.text.trim();
 
-    if (studentId.isEmpty || name.isEmpty || email.isEmpty) {
+    if (studentId.isEmpty || name.isEmpty || email.isEmpty || major.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all fields.'),
-        ),
+        const SnackBar(content: Text('Please fill in all fields.')),
       );
       return;
     }
@@ -47,23 +49,20 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
       studentId: studentId,
       name: name,
       email: email,
+      major: major,
     );
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Student ID bound successfully.'),
-      ),
+      const SnackBar(content: Text('Student ID bound successfully.')),
     );
   }
 
   void logout() {
     ref.read(studentAuthProvider.notifier).state = null;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Logged out successfully.'),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Logged out successfully.')));
   }
 
   @override
@@ -103,63 +102,58 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(24, 18, 24, 28),
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [darkGreen, green],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 82,
-                          height: 82,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.school,
-                            color: darkGreen,
-                            size: 44,
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        Text(
-                          account == null
-                              ? text['studentLoginTitle'] ?? 'Student Login'
-                              : text['studentBoundTitle'] ?? 'Student ID Bound',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          account == null
-                              ? text['studentLoginDesc'] ??
-                                  'Bind your NTPU Student ID to unlock student-only features.'
-                              : text['studentBoundDesc'] ??
-                                  'You can now access student-only campus services.',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            height: 1.35,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
                   if (account == null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [darkGreen, green],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 82,
+                            height: 82,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.school,
+                              color: darkGreen,
+                              size: 44,
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+                          Text(
+                            text['studentLoginTitle'] ?? 'Student Login',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 26,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            text['studentLoginDesc'] ??
+                                'Bind your NTPU Student ID to unlock student-only features.',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              height: 1.35,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     _InputField(
                       controller: studentIdController,
                       label: text['studentId'] ?? 'Student ID',
@@ -179,6 +173,13 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
                       label: text['studentEmail'] ?? 'School Email',
                       hint: 'example@gm.ntpu.edu.tw',
                       icon: Icons.email,
+                    ),
+                    const SizedBox(height: 14),
+                    _InputField(
+                      controller: majorController,
+                      label: text['studentMajor'] ?? 'Major',
+                      hint: 'e.g. Computer Science',
+                      icon: Icons.school_outlined,
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
@@ -204,26 +205,35 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
                       ),
                     ),
                   ] else ...[
+                    StudentVirtualCard(
+                      studentId: account.studentId,
+                      name: account.name,
+                      major: account.major,
+                    ),
+                    const SizedBox(height: 18),
                     _AccountCard(account: account),
                     const SizedBox(height: 18),
                     _UnlockedFeatureCard(
                       icon: Icons.assignment_turned_in,
                       title: text['attendance'] ?? 'Attendance Checker',
-                      subtitle: text['attendanceDesc'] ??
+                      subtitle:
+                          text['attendanceDesc'] ??
                           'Check class attendance after Student ID verification.',
                     ),
                     const SizedBox(height: 12),
                     _UnlockedFeatureCard(
                       icon: Icons.menu_book,
                       title: text['secondhandBooks'] ?? 'Secondhand Books',
-                      subtitle: text['secondhandBooksDesc'] ??
+                      subtitle:
+                          text['secondhandBooksDesc'] ??
                           'Verified student-to-student textbook trading.',
                     ),
                     const SizedBox(height: 12),
                     _UnlockedFeatureCard(
                       icon: Icons.forum,
                       title: text['forum'] ?? 'Student Forum',
-                      subtitle: text['forumDesc'] ??
+                      subtitle:
+                          text['forumDesc'] ??
                           'A campus discussion space like Dcard / Threads.',
                     ),
                     const SizedBox(height: 24),
@@ -287,10 +297,7 @@ class _InputField extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Color(0xFF515F49),
-            width: 2,
-          ),
+          borderSide: const BorderSide(color: Color(0xFF515F49), width: 2),
           borderRadius: BorderRadius.circular(12),
         ),
       ),
@@ -301,9 +308,7 @@ class _InputField extends StatelessWidget {
 class _AccountCard extends StatelessWidget {
   final StudentAccount account;
 
-  const _AccountCard({
-    required this.account,
-  });
+  const _AccountCard({required this.account});
 
   @override
   Widget build(BuildContext context) {
@@ -345,10 +350,7 @@ class _AccountRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _AccountRow({
-    required this.label,
-    required this.value,
-  });
+  const _AccountRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -407,7 +409,7 @@ class _UnlockedFeatureCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF4EA3E7).withOpacity(0.12),
+              color: const Color(0xFF4EA3E7).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(icon, color: const Color(0xFF4EA3E7)),

@@ -1,0 +1,50 @@
+# Peilar Superapp Development Guide
+
+## Language & Localization
+
+### Bilingual Support Rule
+All displayed text in the app **must be bilingual** with support for **English (en)** and **Chinese (zh)**.
+
+- **Central language file**: `lib/features/landing/presentation/providers/language_provider.dart`
+- **Language enum**: `AppLanguage` with two values:
+  - `AppLanguage.zh` - Chinese (Traditional)
+  - `AppLanguage.en` - English
+- **Default language**: Chinese (`AppLanguage.zh`)
+- **String provider**: Use `appTextProvider` to access localized strings based on current language
+
+### Adding New Strings
+When adding new user-facing text:
+
+1. Add the key-value pair to **both** `AppLanguage.zh` and `AppLanguage.en` maps in `appText` const
+2. Maintain alphabetical order and logical grouping within each language section
+3. Never hardcode strings in components—always reference the `appTextProvider`
+4. Test both language variants before submitting
+
+### Accessing Strings in Components
+```dart
+// In widgets, watch the language provider:
+final texts = ref.watch(appTextProvider);
+Text(texts['your_key_here']!)
+
+// Or directly access the current language:
+final language = ref.watch(languageProvider);
+```
+
+### Example: Adding a New Feature String
+```dart
+// In appText map:
+AppLanguage.zh: {
+  // ... existing entries ...
+  'newFeature': '新功能名稱',
+},
+AppLanguage.en: {
+  // ... existing entries ...
+  'newFeature': 'New Feature Name',
+},
+```
+
+## Project Structure
+
+- **Frontend**: Flutter (Dart)
+- **State Management**: Riverpod
+- **Features**: Landing page, Student Authentication, Travel AI, Washing Machine, Bebe support
