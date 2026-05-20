@@ -164,7 +164,7 @@ class _CenterRideCodeItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF4EA3E7).withOpacity(0.35),
+                      color: const Color(0xFF4EA3E7).withValues(alpha: 0.35),
                       blurRadius: 14,
                       offset: const Offset(0, 7),
                     ),

@@ -75,7 +75,7 @@ class ItineraryResultPage extends ConsumerWidget {
               child: ListView.separated(
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
                 itemCount: stops.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final stop = stops[index];
 
@@ -89,7 +89,7 @@ class ItineraryResultPage extends ConsumerWidget {
                       border: Border.all(color: const Color(0xFFDDE7D7)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 12,
                           offset: const Offset(0, 6),
                         ),

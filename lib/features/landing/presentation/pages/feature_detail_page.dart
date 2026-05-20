@@ -419,7 +419,7 @@ class _AnnouncementCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFEAF6FF),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF4EA3E7).withOpacity(0.35)),
+        border: Border.all(color: const Color(0xFF4EA3E7).withValues(alpha: 0.35)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -486,9 +486,9 @@ class _LaundryMachineCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: machine.color.withOpacity(0.08),
+        color: machine.color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: machine.color.withOpacity(0.32)),
+        border: Border.all(color: machine.color.withValues(alpha: 0.32)),
       ),
       child: Row(
         children: [
@@ -612,9 +612,9 @@ class _InfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.35)),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Row(
         children: [
