@@ -1,10 +1,15 @@
-import 'dart:math';
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
+import 'package:http/http.dart' as http;
 import '../../../landing/presentation/providers/language_provider.dart';
 import '../../../landing/presentation/widgets/language_toggle.dart';
-import '../widgets/itinerary_step_indicator.dart';
+import '../../domain/entities/itinerary_request.dart';
+import '../providers/itinerary_provider.dart';
 
 class AiItineraryPage extends ConsumerStatefulWidget {
   const AiItineraryPage({super.key});
@@ -14,589 +19,872 @@ class AiItineraryPage extends ConsumerStatefulWidget {
 }
 
 class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
-  static const Color darkGreen = Color(0xFF515F49);
-  static const Color green = Color(0xFF79926C);
+  static const Color _darkGreen = Color(0xFF515F49);
+  static const Color _green = Color(0xFF79926C);
+  static const Color _lightGreen = Color(0xFFF2F6EF);
+  static const Color _border = Color(0xFFDDE7D7);
 
-  final TextEditingController destinationController = TextEditingController();
-  final TextEditingController budgetController = TextEditingController();
+  // Default: Sanxia, New Taipei City
+  static const LatLng _defaultLatLng = LatLng(24.9421, 121.3702);
 
-  int step = 0;
-  DateTime selectedDate = DateTime(2026, 6, 20);
-  String travelWith = 'friends';
-  final Set<String> selectedInterests = {'historic', 'food'};
+  // Free MapLibre tile style (Carto Voyager, no API key required)
+  static const String _mapStyle =
+      'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
-  late final List<_SanxiaPhoto> photos;
+  final TextEditingController _locationCtrl = TextEditingController();
+  String? _selectedPlace;
+  LatLng? _selectedLatLng;
+  List<Map<String, dynamic>> _suggestions = [];
+  bool _showSuggestions = false;
+  Timer? _debounce;
+  bool _loadingGps = false;
+  MapLibreMapController? _mapController;
 
-  @override
-  void initState() {
-    super.initState();
-
-    photos = List<_SanxiaPhoto>.from(_sanxiaPhotos);
-    photos.shuffle(Random());
-  }
+  DateTime _date = DateTime(2026, 6, 20);
+  String _travelWith = 'friends';
+  final Set<String> _interests = {'historic', 'food'};
+  String _budget = '1k3k';
 
   @override
   void dispose() {
-    destinationController.dispose();
-    budgetController.dispose();
+    _locationCtrl.dispose();
+    _debounce?.cancel();
+    // _mapController?.dispose();
     super.dispose();
   }
 
-  void next() {
-    if (step < 4) {
-      setState(() => step++);
-    } else {
-      context.go('/itinerary-result');
+  // ── GPS ────────────────────────────────────────────────────────────────
+
+  Future<void> _useGps() async {
+    setState(() => _loadingGps = true);
+    try {
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.deniedForever) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permission denied')),
+          );
+        }
+        return;
+      }
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+      );
+      if (!mounted) return;
+      final latlng = LatLng(pos.latitude, pos.longitude);
+      setState(() => _selectedLatLng = latlng);
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(latlng, 14),
+      );
+      await _reverseGeocode(latlng);
+    } catch (_) {
+      // GPS unavailable (emulator etc.) — stay on default
+      if (!mounted) return;
+      setState(() => _selectedLatLng = _defaultLatLng);
+    } finally {
+      if (mounted) setState(() => _loadingGps = false);
     }
   }
 
-  void back() {
-    if (step == 0) {
-      context.go('/');
-    } else {
-      setState(() => step--);
+  // ── Nominatim geocoding (free, no API key) ────────────────────────────
+
+  void _onLocationChanged(String value) {
+    _debounce?.cancel();
+    if (value.trim().isEmpty) {
+      setState(() {
+        _suggestions = [];
+        _showSuggestions = false;
+      });
+      return;
     }
-  }
-
-  Future<void> pickDate() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2026, 1, 1),
-      lastDate: DateTime(2027, 12, 31),
-    );
-
-    if (date == null) return;
-
-    setState(() {
-      selectedDate = date;
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      _fetchSuggestions(value.trim());
     });
   }
+
+  Future<void> _fetchSuggestions(String input) async {
+    try {
+      final lang = ref.read(languageProvider) == AppLanguage.zh
+          ? 'zh-TW'
+          : 'en';
+      final uri = Uri.parse(
+        'https://nominatim.openstreetmap.org/search'
+        '?q=${Uri.encodeComponent(input)}'
+        '&format=json&limit=5&addressdetails=1'
+        '&accept-language=$lang&countrycodes=tw',
+      );
+      final res = await http.get(
+        uri,
+        headers: {'User-Agent': 'PeilarSuperapp/1.0 (contact@example.com)'},
+      );
+      if (res.statusCode == 200 && mounted) {
+        final list = jsonDecode(res.body) as List<dynamic>;
+        final results = list.cast<Map<String, dynamic>>().take(5).toList();
+        setState(() {
+          _suggestions = results;
+          _showSuggestions = results.isNotEmpty;
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _pickSuggestion(Map<String, dynamic> s) async {
+    final display = s['display_name'] as String? ?? '';
+    final name = s['name'] as String? ?? display.split(',').first.trim();
+    final lat = double.tryParse(s['lat'] as String? ?? '');
+    final lon = double.tryParse(s['lon'] as String? ?? '');
+
+    setState(() {
+      _locationCtrl.text = display.split(',').take(2).join(',').trim();
+      _selectedPlace = name;
+      _suggestions = [];
+      _showSuggestions = false;
+    });
+
+    if (lat != null && lon != null) {
+      final latlng = LatLng(lat, lon);
+      setState(() => _selectedLatLng = latlng);
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(latlng, 14),
+      );
+    }
+  }
+
+  Future<void> _reverseGeocode(LatLng latlng) async {
+    try {
+      final lang = ref.read(languageProvider) == AppLanguage.zh
+          ? 'zh-TW'
+          : 'en';
+      final uri = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse'
+        '?lat=${latlng.latitude}&lon=${latlng.longitude}'
+        '&format=json&accept-language=$lang',
+      );
+      final res = await http.get(
+        uri,
+        headers: {'User-Agent': 'PeilarSuperapp/1.0 (contact@example.com)'},
+      );
+      if (res.statusCode == 200 && mounted) {
+        final data = jsonDecode(res.body) as Map<String, dynamic>;
+        final display = data['display_name'] as String?;
+        if (display != null) {
+          final shortName = display.split(',').take(2).join(',').trim();
+          setState(() {
+            _locationCtrl.text = shortName;
+            _selectedPlace = display.split(',').first.trim();
+          });
+        }
+      }
+    } catch (_) {}
+  }
+
+  // ── Date ────────────────────────────────────────────────────────────────
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2028, 12, 31),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: _darkGreen,
+            onPrimary: Colors.white,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) setState(() => _date = picked);
+  }
+
+  // ── Generate ───────────────────────────────────────────────────────────
+
+  Future<void> _generate() async {
+    final text = ref.read(appTextProvider);
+    final location = _locationCtrl.text.trim();
+    if (location.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            text['locationRequired'] ?? 'Please enter a destination',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final lang = ref.read(languageProvider) == AppLanguage.zh ? 'zh' : 'en';
+    final request = ItineraryRequest(
+      location: _selectedPlace ?? location,
+      latitude: _selectedLatLng?.latitude,
+      longitude: _selectedLatLng?.longitude,
+      date: _date,
+      travelWith: _travelWith,
+      interests: _interests.toList(),
+      budget: _budget,
+    );
+
+    ref
+        .read(itineraryDestinationProvider.notifier)
+        .set((_selectedLatLng != null) ? _selectedLatLng : _defaultLatLng);
+    await ref.read(itineraryProvider.notifier).generate(request, lang);
+    if (!mounted) return;
+
+    ref
+        .read(itineraryProvider)
+        .when(
+          data: (result) {
+            if (result != null) context.go('/itinerary-result');
+          },
+          loading: () {},
+          error: (e, st) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  text['generationError'] ??
+                      'Failed to generate itinerary. Please try again.',
+                ),
+                backgroundColor: Colors.red.shade700,
+              ),
+            );
+          },
+        );
+  }
+
+  // ── Build ─────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     final text = ref.watch(appTextProvider);
-    final photo = photos[step % photos.length];
+    final isGenerating = ref.watch(itineraryProvider) is AsyncLoading;
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
+      body: Stack(
         children: [
-          _HeroHeader(
-            title: text['aiTitle'] ?? 'AI Itinerary',
-            subtitle: text['aiSubtitle'] ?? 'Plan your Sanxia trip with AI assistance',
-            photo: photo,
-            onBack: back,
-          ),
-          const SizedBox(height: 24),
-          ItineraryStepIndicator(currentStep: step),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(28, 34, 28, 20),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: buildStep(text),
+          CustomScrollView(
+            slivers: [
+              _buildAppBar(text),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 110),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    // Where
+                    _SectionLabel(
+                      icon: Icons.place_outlined,
+                      title: text['whereGo'] ?? 'Where do you want to go?',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildLocationRow(text),
+                    if (_showSuggestions && _suggestions.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      _buildSuggestionsCard(),
+                    ],
+                    const SizedBox(height: 12),
+                    _buildMapCard(),
+                    const SizedBox(height: 28),
+
+                    // When
+                    _SectionLabel(
+                      icon: Icons.calendar_month_outlined,
+                      title: text['whenGo'] ?? 'When do you plan to go?',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDateRow(),
+                    const SizedBox(height: 28),
+
+                    // Who
+                    _SectionLabel(
+                      icon: Icons.group_outlined,
+                      title: text['whoGo'] ?? 'Who is going with you?',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildCompanionRow(text),
+                    const SizedBox(height: 28),
+
+                    // Interests
+                    _SectionLabel(
+                      icon: Icons.favorite_outline,
+                      title: text['interests'] ?? 'What are you interested in?',
+                      subtitle: text['chooseAll'] ?? '*Choose all that apply',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildInterestsGrid(text),
+                    const SizedBox(height: 28),
+
+                    // Budget
+                    _SectionLabel(
+                      icon: Icons.payments_outlined,
+                      title: text['budget'] ?? 'What is your estimated budget?',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildBudgetDropdown(text),
+                  ]),
+                ),
               ),
-            ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(28, 8, 28, 32),
-            child: SizedBox(
-              width: 160,
-              height: 49,
-              child: ElevatedButton(
-                onPressed: next,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: darkGreen,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+
+          // Fixed Generate button
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, -4),
                   ),
-                ),
-                child: Text(
-                  step == 4 ? text['submit'] ?? 'Submit' : text['next'] ?? 'Next',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+                ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildStep(Map<String, String> text) {
-    if (step == 0) {
-      return _QuestionBlock(
-        key: const ValueKey('step1'),
-        question: text['whereGo'] ?? 'Where do you want to go?',
-        child: _InputBox(
-          controller: destinationController,
-          hintText: text['wherePlaceholder'] ?? 'e.g. Sanxia Old Street',
-          icon: Icons.place_outlined,
-        ),
-      );
-    }
-
-    if (step == 1) {
-      return _QuestionBlock(
-        key: const ValueKey('step2'),
-        question: text['whenGo'] ?? 'When do you plan to go?',
-        child: GestureDetector(
-          onTap: pickDate,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              border: Border.all(color: green),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.calendar_month, color: green),
-                const SizedBox(width: 12),
-                Text(
-                  '${selectedDate.year}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.day.toString().padLeft(2, '0')}',
-                  style: const TextStyle(
-                    color: darkGreen,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    if (step == 2) {
-      return _QuestionBlock(
-        key: const ValueKey('step3'),
-        question: text['whoGo'] ?? 'Who is going with you?',
-        child: Column(
-          children: [
-            _ChoiceButton(
-              label: text['solo'] ?? 'Solo',
-              selected: travelWith == 'solo',
-              icon: Icons.person,
-              onTap: () => setState(() => travelWith = 'solo'),
-            ),
-            const SizedBox(height: 12),
-            _ChoiceButton(
-              label: text['friends'] ?? 'Friends',
-              selected: travelWith == 'friends',
-              icon: Icons.group,
-              onTap: () => setState(() => travelWith = 'friends'),
-            ),
-            const SizedBox(height: 12),
-            _ChoiceButton(
-              label: text['family'] ?? 'Family',
-              selected: travelWith == 'family',
-              icon: Icons.family_restroom,
-              onTap: () => setState(() => travelWith = 'family'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (step == 3) {
-      final options = [
-        _InterestOption('historic', text['historic'] ?? 'Historic Landmarks', Icons.account_balance),
-        _InterestOption('food', text['food'] ?? 'Delicious Foods', Icons.restaurant),
-        _InterestOption('art', text['art'] ?? 'Art Galleries', Icons.palette),
-        _InterestOption('hiking', text['hiking'] ?? 'Hiking', Icons.hiking),
-        _InterestOption('shopping', text['shopping'] ?? 'Shopping', Icons.shopping_bag),
-        _InterestOption('mustSee', text['mustSee'] ?? 'Must-see Attractions', Icons.star),
-      ];
-
-      return _QuestionBlock(
-        key: const ValueKey('step4'),
-        question: text['interests'] ?? 'What are you interested in?',
-        subtitle: text['chooseAll'] ?? '*Choose all that apply',
-        child: Column(
-          children: options.map((item) {
-            final selected = selectedInterests.contains(item.id);
-
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _InterestTile(
-                label: item.label,
-                icon: item.icon,
-                selected: selected,
-                onTap: () {
-                  setState(() {
-                    if (selected) {
-                      selectedInterests.remove(item.id);
-                    } else {
-                      selectedInterests.add(item.id);
-                    }
-                  });
-                },
-              ),
-            );
-          }).toList(),
-        ),
-      );
-    }
-
-    return _QuestionBlock(
-      key: const ValueKey('step5'),
-      question: text['budget'] ?? 'What is your estimated budget?',
-      child: _InputBox(
-        controller: budgetController,
-        hintText: text['budgetHint'] ?? 'e.g. 5000, numbers only',
-        icon: Icons.payments_outlined,
-        keyboardType: TextInputType.number,
-      ),
-    );
-  }
-}
-
-class _SanxiaPhoto {
-  final String name;
-  final String url;
-
-  const _SanxiaPhoto({
-    required this.name,
-    required this.url,
-  });
-}
-
-const List<_SanxiaPhoto> _sanxiaPhotos = [
-  _SanxiaPhoto(
-    name: 'Sanxia Old Street',
-    url: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sanxia%20Old%20Street.jpg?width=1200',
-  ),
-  _SanxiaPhoto(
-    name: 'Sanxia Zushi Temple',
-    url: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sanxia%20Zushi%20Temple.jpg?width=1200',
-  ),
-  _SanxiaPhoto(
-    name: 'Manyueyuan Forest Recreation Area',
-    url: 'https://commons.wikimedia.org/wiki/Special:FilePath/%E6%BB%BF%E6%9C%88%E5%9C%93%E6%A3%AE%E6%9E%97%E9%81%8A%E6%A8%82%E5%8D%80%20Manyueyuan%20Forest%20Recreation%20Area%20-%20panoramio%20%282%29.jpg?width=1200',
-  ),
-  _SanxiaPhoto(
-    name: 'New Taipei City Hakka Museum',
-    url: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hakka%20Museum%20%E5%AE%A2%E5%AE%B6%E5%8D%9A%E7%89%A9%E9%A4%A8%20-%20panoramio.jpg?width=1200',
-  ),
-  _SanxiaPhoto(
-    name: 'Yuan Shan Weir',
-    url: 'https://commons.wikimedia.org/wiki/Special:FilePath/Yuan%20Shan%20Weir.jpg?width=1200',
-  ),
-];
-
-class _InterestOption {
-  final String id;
-  final String label;
-  final IconData icon;
-
-  const _InterestOption(this.id, this.label, this.icon);
-}
-
-class _HeroHeader extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final _SanxiaPhoto photo;
-  final VoidCallback onBack;
-
-  const _HeroHeader({
-    required this.title,
-    required this.subtitle,
-    required this.photo,
-    required this.onBack,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 300,
-      width: double.infinity,
-      color: const Color(0xFF515F49),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.network(
-            photo.url,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF3F4D38), Color(0xFF79926C)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-              );
-            },
-          ),
-          Container(color: Colors.black.withValues(alpha: 0.42)),
-          SafeArea(
-            bottom: false,
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 16,
-                  left: 18,
-                  child: IconButton(
-                    onPressed: onBack,
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  ),
-                ),
-                const Positioned(
-                  top: 22,
-                  right: 18,
-                  child: LanguageToggle(darkMode: true),
-                ),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 36),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          title,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
+              child: SizedBox(
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: isGenerating ? null : _generate,
+                  icon: isGenerating
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
                             color: Colors.white,
-                            fontSize: 34,
-                            fontWeight: FontWeight.w900,
+                            strokeWidth: 2.5,
                           ),
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          subtitle,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(99),
-                          ),
-                          child: Text(
-                            photo.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ],
+                        )
+                      : const Icon(Icons.auto_awesome, size: 20),
+                  label: Text(
+                    isGenerating
+                        ? (text['generating'] ?? 'Generating...')
+                        : (text['generateItinerary'] ?? 'Generate Itinerary'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _darkGreen,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: _green,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
+
+  // ── AppBar ─────────────────────────────────────────────────────────────
+
+  SliverAppBar _buildAppBar(Map<String, String> text) {
+    return SliverAppBar(
+      expandedHeight: 155,
+      floating: false,
+      pinned: true,
+      backgroundColor: _darkGreen,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => context.go('/'),
+      ),
+      actions: const [
+        Padding(
+          padding: EdgeInsets.only(right: 14),
+          child: LanguageToggle(darkMode: true),
+        ),
+      ],
+      title: Text(
+        text['aiTitle'] ?? 'AI Itinerary',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w900,
+          fontSize: 18,
+        ),
+      ),
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF3F4D38), Color(0xFF79926C)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 56),
+              child: Text(
+                text['aiSubtitle'] ?? 'Plan your trip with AI assistance',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Location row ────────────────────────────────────────────────────────
+
+  Widget _buildLocationRow(Map<String, String> text) {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _locationCtrl,
+            onChanged: _onLocationChanged,
+            decoration: InputDecoration(
+              hintText: text['wherePlaceholder'] ?? 'e.g. Sanxia Old Street',
+              prefixIcon: const Icon(Icons.search, color: _green, size: 20),
+              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+              filled: true,
+              fillColor: _lightGreen,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 13,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: _border),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: _darkGreen, width: 1.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 48,
+          height: 48,
+          child: IconButton.filled(
+            tooltip: text['useMyLocation'] ?? 'Use my location',
+            onPressed: _loadingGps ? null : _useGps,
+            icon: _loadingGps
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Icon(Icons.my_location, size: 20),
+            style: IconButton.styleFrom(
+              backgroundColor: _darkGreen,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Autocomplete dropdown ───────────────────────────────────────────────
+
+  Widget _buildSuggestionsCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.07),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: _suggestions.map((s) {
+          final display = s['display_name'] as String? ?? '';
+          final name = (s['name'] as String? ?? '').isNotEmpty
+              ? s['name'] as String
+              : display.split(',').first.trim();
+          final secondary = display.split(',').skip(1).take(2).join(',').trim();
+          return InkWell(
+            onTap: () => _pickSuggestion(s),
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+              child: Row(
+                children: [
+                  const Icon(Icons.place_outlined, color: _green, size: 18),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            color: _darkGreen,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
+                        ),
+                        if (secondary.isNotEmpty)
+                          Text(
+                            secondary,
+                            style: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontSize: 11,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // ── MapLibre map ────────────────────────────────────────────────────────
+
+  Widget _buildMapCard() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: SizedBox(
+        height: 220,
+        width: double.infinity,
+        child: Stack(
+          children: [
+            MapLibreMap(
+              styleString: _mapStyle,
+              initialCameraPosition: CameraPosition(
+                target: _selectedLatLng ?? _defaultLatLng,
+                zoom: 13,
+              ),
+              onMapCreated: (ctrl) {
+                _mapController = ctrl;
+                // Auto-GPS on first load if no location selected
+                if (_selectedLatLng == null) _useGps();
+              },
+              onCameraIdle: () {
+                final latlng = _mapController?.cameraPosition?.target;
+                if (latlng != null && mounted) {
+                  setState(() => _selectedLatLng = latlng);
+                }
+              },
+              myLocationEnabled: true,
+              myLocationRenderMode: MyLocationRenderMode.normal,
+              compassEnabled: false,
+              rotateGesturesEnabled: false,
+              tiltGesturesEnabled: false,
+            ),
+            // Center pin overlay
+            const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.location_pin,
+                    color: Color(0xFF515F49),
+                    size: 38,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 36),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Date ────────────────────────────────────────────────────────────────
+
+  Widget _buildDateRow() {
+    return InkWell(
+      onTap: _pickDate,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: _lightGreen,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: _border),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.calendar_month, color: _green, size: 20),
+            const SizedBox(width: 12),
+            Text(
+              '${_date.year} / ${_date.month.toString().padLeft(2, '0')} / ${_date.day.toString().padLeft(2, '0')}',
+              style: const TextStyle(
+                color: _darkGreen,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Spacer(),
+            const Icon(Icons.edit_calendar_outlined, color: _green, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Companion ──────────────────────────────────────────────────────────
+
+  Widget _buildCompanionRow(Map<String, String> text) {
+    const options = [
+      ('solo', Icons.person),
+      ('friends', Icons.group),
+      ('family', Icons.family_restroom),
+    ];
+    final labels = {
+      'solo': text['solo'] ?? 'Solo',
+      'friends': text['friends'] ?? 'Friends',
+      'family': text['family'] ?? 'Family',
+    };
+
+    return Row(
+      children: options.asMap().entries.map((e) {
+        final key = e.value.$1;
+        final icon = e.value.$2;
+        final selected = _travelWith == key;
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: e.key < options.length - 1 ? 8 : 0),
+            child: InkWell(
+              onTap: () => setState(() => _travelWith = key),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                height: 60,
+                decoration: BoxDecoration(
+                  color: selected ? _darkGreen : _lightGreen,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: selected ? _darkGreen : _border),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      color: selected ? Colors.white : _green,
+                      size: 22,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      labels[key] ?? key,
+                      style: TextStyle(
+                        color: selected ? Colors.white : _darkGreen,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // ── Interests ──────────────────────────────────────────────────────────
+
+  Widget _buildInterestsGrid(Map<String, String> text) {
+    final options = [
+      (
+        'historic',
+        text['historic'] ?? 'Historic',
+        Icons.account_balance_outlined,
+      ),
+      ('food', text['food'] ?? 'Food', Icons.restaurant_outlined),
+      ('art', text['art'] ?? 'Art', Icons.palette_outlined),
+      ('hiking', text['hiking'] ?? 'Hiking', Icons.hiking),
+      ('shopping', text['shopping'] ?? 'Shopping', Icons.shopping_bag_outlined),
+      ('mustSee', text['mustSee'] ?? 'Must-see', Icons.star_outline),
+    ];
+
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10,
+      childAspectRatio: 3.4,
+      children: options.map((opt) {
+        final selected = _interests.contains(opt.$1);
+        return InkWell(
+          onTap: () => setState(() {
+            if (selected) {
+              _interests.remove(opt.$1);
+            } else {
+              _interests.add(opt.$1);
+            }
+          }),
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: selected ? const Color(0xFFDDE7D7) : _lightGreen,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: selected ? _darkGreen : _border),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  selected ? Icons.check_box : Icons.check_box_outline_blank,
+                  color: selected ? _darkGreen : _green,
+                  size: 18,
+                ),
+                const SizedBox(width: 6),
+                Icon(opt.$3, color: selected ? _darkGreen : _green, size: 15),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: Text(
+                    opt.$2,
+                    style: const TextStyle(
+                      color: _darkGreen,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // ── Budget ─────────────────────────────────────────────────────────────
+
+  Widget _buildBudgetDropdown(Map<String, String> text) {
+    final options = [
+      ('under1k', text['budgetUnder1k'] ?? 'Under NT\$1,000'),
+      ('1k3k', text['budget1k3k'] ?? 'NT\$1,000–3,000'),
+      ('3k5k', text['budget3k5k'] ?? 'NT\$3,000–5,000'),
+      ('over5k', text['budgetOver5k'] ?? 'Over NT\$5,000'),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+      decoration: BoxDecoration(
+        color: _lightGreen,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _border),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _budget,
+          isExpanded: true,
+          icon: const Icon(Icons.expand_more, color: _green),
+          dropdownColor: Colors.white,
+          style: const TextStyle(
+            color: _darkGreen,
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
+          items: options
+              .map(
+                (opt) => DropdownMenuItem(
+                  value: opt.$1,
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.payments_outlined,
+                        color: _green,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(opt.$2),
+                    ],
+                  ),
+                ),
+              )
+              .toList(),
+          onChanged: (v) {
+            if (v != null) setState(() => _budget = v);
+          },
+        ),
+      ),
+    );
+  }
 }
 
-class _QuestionBlock extends StatelessWidget {
-  final String question;
-  final String? subtitle;
-  final Widget child;
+// ── Section label ─────────────────────────────────────────────────────────
 
-  const _QuestionBlock({
-    super.key,
-    required this.question,
-    this.subtitle,
-    required this.child,
-  });
+class _SectionLabel extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+
+  const _SectionLabel({required this.icon, required this.title, this.subtitle});
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          question,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Color(0xFF515F49),
-            fontSize: 21,
-            fontWeight: FontWeight.w900,
-            height: 1.24,
-          ),
-        ),
-        if (subtitle != null) ...[
-          const SizedBox(height: 6),
-          Text(
-            subtitle!,
-            style: TextStyle(
-              color: Colors.grey.shade500,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-        const SizedBox(height: 30),
-        child,
-      ],
-    );
-  }
-}
-
-class _InputBox extends StatelessWidget {
-  final TextEditingController controller;
-  final String hintText;
-  final IconData icon;
-  final TextInputType? keyboardType;
-
-  const _InputBox({
-    required this.controller,
-    required this.hintText,
-    required this.icon,
-    this.keyboardType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 286,
-      child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: const Color(0xFF79926C)),
-          hintText: hintText,
-          hintStyle: TextStyle(
-            color: Colors.grey.shade400,
-            fontSize: 14,
-          ),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Color(0xFF79926C)),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Color(0xFF515F49), width: 2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ChoiceButton extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _ChoiceButton({
-    required this.label,
-    required this.selected,
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final bg = selected ? const Color(0xFF515F49) : Colors.white;
-    final fg = selected ? Colors.white : const Color(0xFF79926C);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        width: 288,
-        height: 48,
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF79926C)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Row(
           children: [
-            Text(
-              label,
-              style: TextStyle(
-                color: fg,
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Icon(icon, color: fg, size: 22),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InterestTile extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _InterestTile({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = selected ? const Color(0xFF515F49) : const Color(0xFF79926C);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        width: 288,
-        height: 55,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: selected ? const Color(0xFFF2F6EF) : Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              selected ? Icons.check_box : Icons.check_box_outline_blank,
-              color: color,
-            ),
-            const SizedBox(width: 14),
-            Icon(icon, color: color, size: 21),
-            const SizedBox(width: 12),
+            Icon(icon, color: const Color(0xFF515F49), size: 18),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
-                label,
-                style: TextStyle(
-                  color: color,
+                title,
+                style: const TextStyle(
+                  color: Color(0xFF515F49),
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ),
           ],
         ),
-      ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 3),
+          Padding(
+            padding: const EdgeInsets.only(left: 26),
+            child: Text(
+              subtitle!,
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
