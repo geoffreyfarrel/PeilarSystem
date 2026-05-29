@@ -1,0 +1,29 @@
+diff --git a/lib/features/landing/presentation/pages/landing_page.dart b/lib/features/landing/presentation/pages/landing_page.dart
+--- a/lib/features/landing/presentation/pages/landing_page.dart
++++ b/lib/features/landing/presentation/pages/landing_page.dart
+@@
+       _FeatureSpec(
+         id: 'secondhand-books',
+         label: text['secondhandBooks'] ?? 'Secondhand Books',
+         subtitle: text['secondhandBooksDesc'] ?? 'Verified textbook trading.',
+         icon: Icons.menu_book,
+-        color: Colors.brown,
++        color: LandingPage.blue,
+         studentOnly: true,
+       ),
+@@
+               children: studentFeatures.map((item) {
+                 return Expanded(
+                   child: _StudentFeatureCard(
+                     item: item,
+-                    onTap: () => context.go('/student-bind'),
++                    onTap: () {
++                      if (item.id == 'secondhand-books') {
++                        context.go('/secondhand');
++                      } else {
++                        context.go('/student-bind');
++                      }
++                    },
+                   ),
+                 );
+               }).toList(),

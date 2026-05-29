@@ -7,14 +7,12 @@ import 'package:peilar_superapp/features/itinerary/presentation/pages/itinerary_
 import 'package:peilar_superapp/features/qr_scanner/presentation/pages/qr_scanner_page.dart';
 import 'package:peilar_superapp/features/qr_scanner/presentation/pages/payment_page.dart';
 import 'package:peilar_superapp/features/qr_scanner/presentation/pages/payment_result_page.dart';
+import 'package:peilar_superapp/features/landing/presentation/pages/secondhand_marketplace_page.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const LandingPage(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const LandingPage()),
     GoRoute(
       path: '/feature/:id',
       builder: (context, state) {
@@ -42,13 +40,14 @@ final appRouter = GoRouter(
       path: '/qr-scanner',
       builder: (context, state) => const QrScannerPage(),
     ),
-    GoRoute(
-      path: '/payment',
-      builder: (context, state) => const PaymentPage(),
-    ),
+    GoRoute(path: '/payment', builder: (context, state) => const PaymentPage()),
     GoRoute(
       path: '/payment-result',
       builder: (context, state) => const PaymentResultPage(),
+    ),
+    GoRoute(
+      path: '/secondhand',
+      builder: (context, state) => const SecondhandMarketplacePage(),
     ),
   ],
 );
