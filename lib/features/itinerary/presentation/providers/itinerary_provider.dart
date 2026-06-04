@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:maplibre_gl/maplibre_gl.dart';
+import 'package:latlong2/latlong.dart';
 import '../../data/services/gemini_service.dart';
 import '../../domain/entities/itinerary_request.dart';
 import '../../domain/entities/itinerary_result.dart';
@@ -9,7 +9,7 @@ final itineraryProvider =
   ItineraryNotifier.new,
 );
 
-// Stores the destination LatLng from the last generation so the result page
+// Stores the destination from the last generation so the result page
 // can show the map without needing coordinates in ItineraryResult.
 final itineraryDestinationProvider =
     NotifierProvider<ItineraryDestinationNotifier, LatLng?>(
@@ -20,7 +20,7 @@ class ItineraryDestinationNotifier extends Notifier<LatLng?> {
   @override
   LatLng? build() => null;
 
-  void set(LatLng? latlng) => state = latlng;
+  void set(LatLng? geo) => state = geo;
 }
 
 class ItineraryNotifier extends AsyncNotifier<ItineraryResult?> {

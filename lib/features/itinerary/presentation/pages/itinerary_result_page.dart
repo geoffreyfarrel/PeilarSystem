@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:maplibre_gl/maplibre_gl.dart';
 import '../../../landing/presentation/providers/language_provider.dart';
 import '../../domain/entities/itinerary_result.dart';
 import '../providers/itinerary_provider.dart';
@@ -44,31 +44,16 @@ class ItineraryResultPage extends ConsumerWidget {
   }
 }
 
-class _ResultView extends ConsumerStatefulWidget {
+class _ResultView extends ConsumerWidget {
   final ItineraryResult result;
   final Map<String, String> text;
 
   const _ResultView({required this.result, required this.text});
 
-  @override
-  ConsumerState<_ResultView> createState() => _ResultViewState();
-}
-
-class _ResultViewState extends ConsumerState<_ResultView> {
   static const Color _darkGreen = Color(0xFF515F49);
-  static const String _mapStyle =
-      'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
-
-  MapLibreMapController? _mapController;
 
   @override
-  void dispose() {
-    _mapController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final destination = ref.watch(itineraryDestinationProvider);
 
     return SafeArea(
@@ -85,7 +70,7 @@ class _ResultViewState extends ConsumerState<_ResultView> {
                 ),
                 Expanded(
                   child: Text(
-                    widget.result.title,
+                    result.title,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: _darkGreen,
@@ -102,7 +87,7 @@ class _ResultViewState extends ConsumerState<_ResultView> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 6),
             child: Text(
-              widget.text['resultSubtitle'] ??
+              text['resultSubtitle'] ??
                   'A recommended plan based on your choices',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -122,19 +107,21 @@ class _ResultViewState extends ConsumerState<_ResultView> {
                   height: 180,
                   child: Stack(
                     children: [
-                      MapLibreMap(
-                        styleString: _mapStyle,
-                        initialCameraPosition: CameraPosition(
-                          target: destination,
-                          zoom: 13,
+                      FlutterMap(
+                        options: MapOptions(
+                          initialCenter: destination,
+                          initialZoom: 13.0,
+                          interactionOptions: const InteractionOptions(
+                            flags: InteractiveFlag.none,
+                          ),
                         ),
-                        onMapCreated: (ctrl) => _mapController = ctrl,
-                        scrollGesturesEnabled: false,
-                        zoomGesturesEnabled: false,
-                        rotateGesturesEnabled: false,
-                        tiltGesturesEnabled: false,
-                        compassEnabled: false,
-                        myLocationEnabled: false,
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+                            userAgentPackageName: 'com.example.peilar_superapp',
+                          ),
+                        ],
                       ),
                       const Center(
                         child: Column(
@@ -166,18 +153,18 @@ class _ResultViewState extends ConsumerState<_ResultView> {
           Expanded(
             child: ListView.separated(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-              itemCount: widget.result.stops.length,
+              itemCount: result.stops.length,
               separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, i) => _StopCard(
-                stop: widget.result.stops[i],
+                stop: result.stops[i],
                 isFirst: i == 0,
               ),
             ),
           ),
 
           // Tips
-          if (widget.result.tips != null && widget.result.tips!.isNotEmpty)
-            _TipsCard(tips: widget.result.tips!, text: widget.text),
+          if (result.tips != null && result.tips!.isNotEmpty)
+            _TipsCard(tips: result.tips!, text: text),
 
           // Back home
           Padding(
@@ -196,7 +183,7 @@ class _ResultViewState extends ConsumerState<_ResultView> {
                   ),
                 ),
                 child: Text(
-                  widget.text['backHome'] ?? 'Back Home',
+                  text['backHome'] ?? 'Back Home',
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w900,
@@ -314,8 +301,7 @@ class _TipsCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.lightbulb_outline,
-                    color: _darkGreen, size: 16),
+                const Icon(Icons.lightbulb_outline, color: _darkGreen, size: 16),
                 const SizedBox(width: 6),
                 Text(
                   text['travelTips'] ?? 'Travel Tips',
@@ -358,8 +344,7 @@ class _ErrorView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline,
-                  color: Colors.red.shade300, size: 52),
+              Icon(Icons.error_outline, color: Colors.red.shade300, size: 52),
               const SizedBox(height: 16),
               Text(
                 text['generationError'] ??
