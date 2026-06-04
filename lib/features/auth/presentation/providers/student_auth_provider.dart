@@ -24,3 +24,5 @@ final studentAuthProvider = StateProvider<StudentAccount?>((ref) {
 final isStudentLoggedInProvider = Provider<bool>((ref) {
   return ref.watch(studentAuthProvider) != null;
 });
+
+final selectedCardDesignProvider = StateProvider<int>((ref) => 0);

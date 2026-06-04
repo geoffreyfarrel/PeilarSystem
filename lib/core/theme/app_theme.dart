@@ -9,6 +9,14 @@ class AppTheme {
   static const Color textDark = Color(0xFF2F2929);
   static const Color textGrey = Color(0xFF646363);
 
+  // Light tints derived from palette colors
+  static const Color primaryLight = Color(0xFFE3F2FB);
+  static const Color secondaryLight = Color(0xFFFCE4F0);
+  static const Color accentLight = Color(0xFFFFF3DC);
+  static const Color successLight = Color(0xFFE5F5EB);
+  static const Color successBorder = Color(0xFFDDE7D7);
+  static const Color borderLight = Color(0xFFE3E3E3);
+
   static ThemeData get lightTheme {
     return ThemeData(
       colorScheme: ColorScheme.fromSeed(
@@ -38,7 +46,7 @@ class AppTheme {
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedItemColor: primaryBlue,
-        unselectedItemColor: Color(0xFF9D9D9D),
+        unselectedItemColor: Color(0xFF646363),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),

@@ -10,11 +10,11 @@ import '../widgets/language_toggle.dart';
 class LandingPage extends ConsumerWidget {
   const LandingPage({super.key});
 
-  static const Color darkHeader = Color(0xFF282828);
-  static const Color blue = Color(0xFF4EA3E7);
-  static const Color green = Color(0xFF53A657);
-  static const Color pink = Color(0xFFE52D88);
-  static const Color yellow = Color(0xFFFFED69);
+  static const Color darkHeader = Color(0xFF2F2929);
+  static const Color blue = Color(0xFF0079BF);
+  static const Color green = Color(0xFF0E9A33);
+  static const Color pink = Color(0xFFC6006E);
+  static const Color yellow = Color(0xFFEDA944);
   static const Color textDark = Color(0xFF2F2929);
   static const Color textGrey = Color(0xFF646363);
 
@@ -195,7 +195,7 @@ class _AutoPromoCarouselState extends State<_AutoPromoCarousel> {
         subtitle: widget.text['digitalEasyCardDesc'] ?? 'Artist and university collections',
         largeText: 'UT',
         icon: Icons.style,
-        background: const Color(0xFFEBD4E7),
+        background: const Color(0xFFFCE4F0),
       ),
       _PromoData(
         id: 'laundry-hub',
@@ -203,7 +203,7 @@ class _AutoPromoCarouselState extends State<_AutoPromoCarousel> {
         subtitle: widget.text['laundryHubDesc'] ?? 'QR booking and machine status',
         largeText: '11',
         icon: Icons.local_laundry_service,
-        background: const Color(0xFFDDEDE7),
+        background: const Color(0xFFE5F5EB),
       ),
       _PromoData(
         id: 'tax-campaign',
@@ -211,7 +211,7 @@ class _AutoPromoCarouselState extends State<_AutoPromoCarousel> {
         subtitle: widget.text['promoCashback'] ?? 'Maximum Cashback',
         largeText: '800',
         icon: Icons.home_work,
-        background: const Color(0xFFFFED69),
+        background: const Color(0xFFEDA944),
       ),
     ];
 
@@ -324,7 +324,7 @@ class _PromoCard extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Color(0xFF3A594B), fontSize: 29, fontWeight: FontWeight.w900),
+                  style: const TextStyle(color: Color(0xFF2F2929), fontSize: 29, fontWeight: FontWeight.w900),
                 ),
               ),
               Positioned(
@@ -335,7 +335,7 @@ class _PromoCard extends StatelessWidget {
                   subtitle,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Color(0xFF465950), fontSize: 13, fontWeight: FontWeight.w600),
+                  style: const TextStyle(color: Color(0xFF2F2929), fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),
               Positioned(
@@ -343,7 +343,7 @@ class _PromoCard extends StatelessWidget {
                 bottom: 18,
                 child: Text(
                   largeText,
-                  style: const TextStyle(color: Color(0xFFD83484), fontSize: 48, fontWeight: FontWeight.w900, height: 0.9),
+                  style: const TextStyle(color: Color(0xFFC6006E), fontSize: 48, fontWeight: FontWeight.w900, height: 0.9),
                 ),
               ),
             ],
@@ -382,7 +382,7 @@ class _MainWhiteSection extends StatelessWidget {
         label: text['paymentCode'] ?? 'Payment Code',
         subtitle: 'Generate payment code for quick checkout.',
         icon: Icons.qr_code_2,
-        color: const Color(0xFFE5B64B),
+        color: const Color(0xFFEDA944),
       ),
       _FeatureSpec(
         id: 'receive',
@@ -424,7 +424,7 @@ class _MainWhiteSection extends StatelessWidget {
         label: text['forum'] ?? 'Student Forum',
         subtitle: text['forumDesc'] ?? 'Verified campus discussion.',
         icon: Icons.forum,
-        color: Colors.teal,
+        color: const Color(0xFF0E9A33),
         studentOnly: true,
       ),
     ];
@@ -435,35 +435,35 @@ class _MainWhiteSection extends StatelessWidget {
         label: text['digitalEasyCard'] ?? 'Digital EasyCard',
         subtitle: text['digitalEasyCardDesc'] ?? 'Customize your virtual card with artist and university collections.',
         icon: Icons.style,
-        color: const Color(0xFF6D5DF6),
+        color: const Color(0xFF0079BF),
       ),
       _FeatureSpec(
         id: 'qr',
         label: text['qr'] ?? 'QR',
         subtitle: 'Universal QR transactions and payments.',
         icon: Icons.qr_code,
-        color: Colors.blueGrey,
+        color: const Color(0xFF0079BF),
       ),
       _FeatureSpec(
         id: 'travel-hub',
         label: text['travelHub'] ?? 'Travel Hub',
         subtitle: 'Tourism, transit, and itinerary support.',
         icon: Icons.luggage,
-        color: Colors.brown,
+        color: const Color(0xFFEDA944),
       ),
       _FeatureSpec(
         id: 'split-bill',
         label: text['splitBill'] ?? 'Split Bill',
         subtitle: 'Split payment with friends.',
         icon: Icons.receipt_long,
-        color: Colors.black54,
+        color: const Color(0xFF646363),
       ),
       _FeatureSpec(
         id: 'festivals',
         label: text['festivals'] ?? 'Festivals',
         subtitle: 'Sanxia event dates, locations, and prices.',
         icon: Icons.celebration,
-        color: Colors.orange,
+        color: const Color(0xFFEDA944),
       ),
       _FeatureSpec(
         id: 'laundry-hub',
@@ -477,17 +477,17 @@ class _MainWhiteSection extends StatelessWidget {
         label: text['groceries'] ?? 'Groceries',
         subtitle: '7-Eleven, FamilyMart, and local shopping.',
         icon: Icons.store,
-        color: Colors.black54,
+        color: const Color(0xFF646363),
       ),
     ];
 
     final serviceItems = [
-      _FeatureSpec(id: 'friday', label: text['friday'] ?? 'Friday +2%', subtitle: 'Friday cashback and reward campaign.', icon: Icons.fastfood, color: Colors.redAccent),
+      _FeatureSpec(id: 'friday', label: text['friday'] ?? 'Friday +2%', subtitle: 'Friday cashback and reward campaign.', icon: Icons.fastfood, color: const Color(0xFFC6006E)),
       _FeatureSpec(id: 'coupons', label: text['coupons'] ?? 'Coupons', subtitle: 'Claim and use EasyWallet coupons.', icon: Icons.confirmation_number, color: LandingPage.pink),
       _FeatureSpec(id: 'card-carrier', label: text['cardCarrier'] ?? 'Card Carrier', subtitle: 'Connect carrier and receipt records.', icon: Icons.credit_score, color: LandingPage.green),
       _FeatureSpec(id: 'voucher', label: text['voucher'] ?? 'Vouchers', subtitle: 'Use local merchant vouchers.', icon: Icons.local_activity, color: LandingPage.pink),
       _FeatureSpec(id: 'insurance', label: text['insurance'] ?? 'Insurance', subtitle: 'Insurance zone and student safety support.', icon: Icons.beach_access, color: LandingPage.green),
-      _FeatureSpec(id: 'finance', label: text['finance'] ?? 'Finance', subtitle: 'Financial service and budget tools.', icon: Icons.account_balance, color: const Color(0xFFE5B64B)),
+      _FeatureSpec(id: 'finance', label: text['finance'] ?? 'Finance', subtitle: 'Financial service and budget tools.', icon: Icons.account_balance, color: const Color(0xFFEDA944)),
       _FeatureSpec(id: 'registration', label: text['registration'] ?? 'Card Registration', subtitle: 'Register EasyCard and Peilar Card.', icon: Icons.edit_note, color: LandingPage.green),
       _FeatureSpec(id: 'accepted-places', label: text['acceptedPlaces'] ?? 'Accepted Places', subtitle: 'Find merchants that accept EasyWallet.', icon: Icons.storefront, color: LandingPage.blue),
     ];
@@ -709,7 +709,7 @@ class _MainActionButton extends StatelessWidget {
                       width: 30,
                       height: 30,
                       alignment: Alignment.center,
-                      decoration: const BoxDecoration(color: Color(0xFF2D9CDB), shape: BoxShape.circle),
+                      decoration: const BoxDecoration(color: Color(0xFF0079BF), shape: BoxShape.circle),
                       child: Text(item.badge!, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900)),
                     ),
                   ),
@@ -763,14 +763,14 @@ class _YellowTaxBanner extends StatelessWidget {
             const Positioned(
               left: 80,
               top: 12,
-              child: Text('2026 / 4/28 - 5/31', style: TextStyle(color: Colors.black54, fontSize: 15, fontWeight: FontWeight.w700)),
+              child: Text('2026 / 4/28 - 5/31', style: TextStyle(color: Color(0xFF646363), fontSize: 15, fontWeight: FontWeight.w700)),
             ),
             Positioned(
               left: 80,
               top: 35,
               child: Text(
                 text['promoTax'] ?? 'House Tax',
-                style: const TextStyle(color: Color(0xFF2B6F8F), fontSize: 26, fontWeight: FontWeight.w900, height: 1),
+                style: const TextStyle(color: Color(0xFF0079BF), fontSize: 26, fontWeight: FontWeight.w900, height: 1),
               ),
             ),
             Positioned(
@@ -778,7 +778,7 @@ class _YellowTaxBanner extends StatelessWidget {
               bottom: 12,
               child: Text(
                 text['promoCashback'] ?? 'Maximum Cashback',
-                style: const TextStyle(color: Color(0xFF2B6F8F), fontSize: 15, fontWeight: FontWeight.w700),
+                style: const TextStyle(color: Color(0xFF0079BF), fontSize: 15, fontWeight: FontWeight.w700),
               ),
             ),
             const Positioned(
@@ -791,7 +791,7 @@ class _YellowTaxBanner extends StatelessWidget {
               bottom: 18,
               child: Text('元', style: TextStyle(color: LandingPage.pink, fontSize: 22, fontWeight: FontWeight.w800)),
             ),
-            Positioned(right: 14, bottom: 12, child: Icon(Icons.home, color: Colors.blue.shade800, size: 34)),
+            Positioned(right: 14, bottom: 12, child: const Icon(Icons.home, color: Color(0xFF0079BF), size: 34)),
           ],
         ),
       ),
@@ -816,7 +816,7 @@ class _StudentFeatureCard extends StatelessWidget {
           height: 104,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFFF7FAF4),
+            color: const Color(0xFFE5F5EB),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFFDDE7D7)),
           ),

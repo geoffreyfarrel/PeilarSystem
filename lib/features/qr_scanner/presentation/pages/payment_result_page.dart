@@ -32,8 +32,8 @@ class PaymentResultPage extends ConsumerWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: isSuccess
-                  ? [const Color(0xFFECFDF5), const Color(0xFFF0FDF4)]
-                  : [const Color(0xFFFFF1F2), const Color(0xFFFFF5F5)],
+                  ? [const Color(0xFFE5F5EB), const Color(0xFFE5F5EB)]
+                  : [const Color(0xFFFCE4F0), const Color(0xFFFCE4F0)],
             ),
           ),
           child: SafeArea(
@@ -54,8 +54,8 @@ class PaymentResultPage extends ConsumerWidget {
                           : (text['paymentFailed'] ?? 'Payment Failed'),
                       style: TextStyle(
                         color: isSuccess
-                            ? const Color(0xFF065F46)
-                            : const Color(0xFF991B1B),
+                            ? const Color(0xFF0E9A33)
+                            : const Color(0xFFC6006E),
                         fontSize: 26,
                         fontWeight: FontWeight.w900,
                       ),
@@ -70,8 +70,8 @@ class PaymentResultPage extends ConsumerWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: isSuccess
-                            ? const Color(0xFF047857)
-                            : const Color(0xFFB91C1C),
+                            ? const Color(0xFF0E9A33)
+                            : const Color(0xFFC6006E),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         height: 1.5,
@@ -95,7 +95,7 @@ class PaymentResultPage extends ConsumerWidget {
                       _ActionButton(
                         label: text['done'] ?? 'Done',
                         icon: Icons.check_circle_outline_rounded,
-                        color: const Color(0xFF059669),
+                        color: const Color(0xFF0E9A33),
                         onTap: () {
                           notifier.reset();
                           context.go('/');
@@ -105,7 +105,7 @@ class PaymentResultPage extends ConsumerWidget {
                       _ActionButton(
                         label: text['tryAgain'] ?? 'Try Again',
                         icon: Icons.refresh_rounded,
-                        color: const Color(0xFFDC2626),
+                        color: const Color(0xFFC6006E),
                         onTap: () {
                           notifier.reset();
                           context.go('/qr-scanner');
@@ -115,7 +115,7 @@ class PaymentResultPage extends ConsumerWidget {
                       _ActionButton(
                         label: text['backToHome'] ?? 'Back to Home',
                         icon: Icons.home_rounded,
-                        color: const Color(0xFF6B7280),
+                        color: const Color(0xFF646363),
                         outlined: true,
                         onTap: () {
                           notifier.reset();
@@ -173,8 +173,8 @@ class _StatusIconState extends State<_StatusIcon>
   @override
   Widget build(BuildContext context) {
     final isSuccess = widget.isSuccess;
-    final bg = isSuccess ? const Color(0xFF059669) : const Color(0xFFDC2626);
-    final ring = isSuccess ? const Color(0xFFD1FAE5) : const Color(0xFFFEE2E2);
+    final bg = isSuccess ? const Color(0xFF0E9A33) : const Color(0xFFC6006E);
+    final ring = isSuccess ? const Color(0xFFE5F5EB) : const Color(0xFFFCE4F0);
 
     return FadeTransition(
       opacity: _opacity,
@@ -239,8 +239,8 @@ class _DetailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = isSuccess
-        ? const Color(0xFFA7F3D0)
-        : const Color(0xFFFECACA);
+        ? const Color(0xFFDDE7D7)
+        : const Color(0xFFFCE4F0);
 
     return Container(
       width: double.infinity,
@@ -265,7 +265,7 @@ class _DetailCard extends StatelessWidget {
             valueStyle: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF1A1A2E),
+              color: Color(0xFF2F2929),
             ),
           ),
           const _Divider(),
@@ -317,7 +317,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               label,
               style: const TextStyle(
-                color: Color(0xFF6B7280),
+                color: Color(0xFF646363),
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -331,7 +331,7 @@ class _DetailRow extends StatelessWidget {
               textAlign: TextAlign.end,
               style: valueStyle ??
                   TextStyle(
-                    color: const Color(0xFF1F2937),
+                    color: const Color(0xFF2F2929),
                     fontSize: mono ? 11 : 14,
                     fontWeight: FontWeight.w600,
                     fontFamily: mono ? 'monospace' : null,
@@ -353,7 +353,7 @@ class _Divider extends StatelessWidget {
     return const Divider(
       height: 1,
       thickness: 1,
-      color: Color(0xFFF3F4F6),
+      color: Color(0xFFF7F7F7),
     );
   }
 }

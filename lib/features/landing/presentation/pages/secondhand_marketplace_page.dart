@@ -201,9 +201,9 @@ class _MarketColors {
   static const Color success = Color(0xFF0E9A33);
   static const Color bg = Color(0xFFF7F7F7);
   static const Color white = Color(0xFFFFFFFF);
-  static const Color text = Color(0xFF1A1A1A);
-  static const Color textMuted = Color(0xFF6B7280);
-  static const Color border = Color(0xFFE5E7EB);
+  static const Color text = Color(0xFF2F2929);
+  static const Color textMuted = Color(0xFF646363);
+  static const Color border = Color(0xFFE3E3E3);
 }
 
 class _MarketHeader extends StatelessWidget {
@@ -2793,7 +2793,7 @@ class _ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF515F49), Color(0xFF79926C)],
+                colors: [Color(0xFF0E9A33), Color(0xFF0E9A33)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -2810,7 +2810,7 @@ class _ProfileScreen extends StatelessWidget {
                   ),
                   child: const Icon(
                     Icons.school_rounded,
-                    color: Color(0xFF515F49),
+                    color: Color(0xFF0E9A33),
                     size: 42,
                   ),
                 ),
@@ -2854,7 +2854,7 @@ class _ProfileScreen extends StatelessWidget {
                     Text(
                       'Student Account',
                       style: TextStyle(
-                        color: Color(0xFF515F49),
+                        color: Color(0xFF0E9A33),
                         fontSize: 17,
                         fontWeight: FontWeight.w900,
                       ),

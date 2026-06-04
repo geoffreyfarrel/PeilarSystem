@@ -156,7 +156,7 @@ class _QrScannerPageState extends ConsumerState<QrScannerPage>
                     _DemoButton(
                       label: text['simulateDynamic'] ??
                           'Simulate Dynamic QR (fixed amount)',
-                      color: const Color(0xFF2D9CDB),
+                      color: const Color(0xFF0079BF),
                       onTap: () =>
                           _navigateToPayment(QrPaymentData.testDynamic()),
                     ),
@@ -164,7 +164,7 @@ class _QrScannerPageState extends ConsumerState<QrScannerPage>
                     _DemoButton(
                       label: text['simulateStatic'] ??
                           'Simulate Static QR (enter amount)',
-                      color: const Color(0xFF53A657),
+                      color: const Color(0xFF0E9A33),
                       onTap: () =>
                           _navigateToPayment(QrPaymentData.testStatic()),
                     ),
@@ -236,7 +236,7 @@ class _ScannerOverlayPainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: [
           Colors.transparent,
-          const Color(0xFF4EA3E7).withValues(alpha: 0.8),
+          const Color(0xFF0079BF).withValues(alpha: 0.8),
           Colors.transparent,
         ],
       ).createShader(Rect.fromLTWH(left, scanY - 1, cutoutSize, 2));
