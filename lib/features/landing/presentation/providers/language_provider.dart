@@ -36,11 +36,14 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'splitBill': '分帳',
     'festivals': '節慶活動',
     'laundryHub': '洗衣中心',
+    'laundryHubDesc': '洗衣倒數、空閒機台、QR 預約與完成提醒。',
+    'digitalEasyCard': '客製悠遊卡',
+    'digitalEasyCardDesc': '與台灣藝術家及大學合作的虛擬悠遊卡設計收藏。',
     'groceries': '超商購物',
 
     'studentArea': '學生專區',
     'attendance': '出席確認',
-    'secondhandBooks': '二手書交易',
+    'secondhandBooks': '二手學生市集',
     'forum': '學生論壇',
 
     'home': '首頁',
@@ -78,7 +81,7 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'tourismLoopDesc': 'AI 推薦三峽在地美食、古蹟與登山路線。',
     'openAiPlanner': '開啟 AI 行程規劃',
     'attendanceDesc': '綁定學生證後可確認課堂出席紀錄。',
-    'secondhandBooksDesc': '學生身份驗證後才能進行二手書交易。',
+    'secondhandBooksDesc': '學生身份驗證後可安全交換二手書、衣物、家具與宿舍生活用品。',
     'forumDesc': '類似 Dcard / Threads 的校園討論空間。',
 
     'aiTitle': 'AI 行程規劃',
@@ -201,11 +204,14 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'splitBill': 'Split Bill',
     'festivals': 'Festivals',
     'laundryHub': 'Laundry Hub',
+    'laundryHubDesc': 'Laundry countdown, free machines, QR booking, and completion reminders.',
+    'digitalEasyCard': 'Digital EasyCard',
+    'digitalEasyCardDesc': 'Customize your virtual EasyCard with artist and university collections.',
     'groceries': 'Groceries',
 
     'studentArea': 'Student Area',
     'attendance': 'Attendance Checker',
-    'secondhandBooks': 'Secondhand Books',
+    'secondhandBooks': 'Student Market',
     'forum': 'Student Forum',
 
     'home': 'Home',
@@ -231,22 +237,19 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'travelRecommendation': 'Travel Recommendation',
 
     'feature': 'Feature',
-    'featureSubtitle':
-        'This is a clickable prototype page for the selected module.',
+    'featureSubtitle': 'This is a clickable prototype page for the selected module.',
     'clickableDemo': 'Clickable Demo',
-    'clickableDemoDesc':
-        'This page is a working placeholder for the selected module.',
+    'clickableDemoDesc': 'This page is a working placeholder for the selected module.',
     'studentOnlyTitle': 'Student ID Required',
     'studentOnlyDesc': 'This feature unlocks after Student ID verification.',
     'ttsDemoTitle': 'Concise TTS',
     'ttsDemoDesc': 'Example voice output: Shuttle arrives in 4 minutes.',
     'tourismLoop': 'Sanxia Tourism Loop',
     'tourismLoopTitle': 'Sanxia Tourism Loop',
-    'tourismLoopDesc':
-        'AI recommends local food, heritage sites, and hiking trails.',
+    'tourismLoopDesc': 'AI recommends local food, heritage sites, and hiking trails.',
     'openAiPlanner': 'Open AI Planner',
     'attendanceDesc': 'Check class attendance after Student ID verification.',
-    'secondhandBooksDesc': 'Verified student-to-student textbook trading.',
+    'secondhandBooksDesc': 'Verified student market for books, clothes, furniture, and dorm-life items.',
     'forumDesc': 'A campus discussion space like Dcard / Threads.',
 
     'aiTitle': 'AI Itinerary',
@@ -285,8 +288,7 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'backHome': 'Back Home',
     'bindStudent': 'Bind Student ID',
     'studentLoginTitle': 'Student Login',
-    'studentLoginDesc':
-        'Bind your NTPU Student ID to unlock student-only features.',
+    'studentLoginDesc': 'Bind your NTPU Student ID to unlock student-only features.',
     'studentBoundTitle': 'Student ID Bound',
     'studentBoundDesc': 'You can now access student-only campus services.',
     'studentId': 'Student ID',
@@ -326,10 +328,8 @@ const Map<AppLanguage, Map<String, String>> appText = {
 
     'paymentSuccess': 'Payment Successful',
     'paymentFailed': 'Payment Failed',
-    'paymentSuccessDesc':
-        'Your payment is complete. Thank you for using Easy Wallet!',
-    'paymentFailedDesc':
-        'Transaction declined. Please check your balance and try again.',
+    'paymentSuccessDesc': 'Your payment is complete. Thank you for using Easy Wallet!',
+    'paymentFailedDesc': 'Transaction declined. Please check your balance and try again.',
     'transactionRef': 'Transaction Ref',
     'transactionAmount': 'Amount',
     'transactionMerchant': 'Merchant',
@@ -340,10 +340,8 @@ const Map<AppLanguage, Map<String, String>> appText = {
 
     'scanStudentId': 'Scan Student ID QR',
     'scanStudentIdTitle': 'Scan Student ID',
-    'scanStudentIdInstruction':
-        'Align the student card QR code within the frame',
-    'scanStudentIdDesc':
-        'Scan the QR code on your student card to auto-fill the form',
+    'scanStudentIdInstruction': 'Align the student card QR code within the frame',
+    'scanStudentIdDesc': 'Scan the QR code on your student card to auto-fill the form',
     'simulateStudentScan': 'Simulate Student ID Scan',
     'studentMajor': 'Major',
     'scanFillHint': 'QR scan will auto-fill the fields',
