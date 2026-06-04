@@ -10,8 +10,8 @@ class ItineraryStepIndicator extends StatelessWidget {
     this.totalSteps = 5,
   });
 
-  static const Color darkGreen = Color(0xFF515F49);
-  static const Color green = Color(0xFF79926C);
+  static const Color darkGreen = Color(0xFF0E9A33);
+  static const Color green = Color(0xFF0E9A33);
 
   @override
   Widget build(BuildContext context) {

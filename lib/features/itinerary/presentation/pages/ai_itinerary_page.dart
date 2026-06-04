@@ -20,9 +20,9 @@ class AiItineraryPage extends ConsumerStatefulWidget {
 }
 
 class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
-  static const Color _darkGreen = Color(0xFF515F49);
-  static const Color _green = Color(0xFF79926C);
-  static const Color _lightGreen = Color(0xFFF2F6EF);
+  static const Color _darkGreen = Color(0xFF0E9A33);
+  static const Color _green = Color(0xFF0E9A33);
+  static const Color _lightGreen = Color(0xFFE5F5EB);
   static const Color _border = Color(0xFFDDE7D7);
 
   // Default: Sanxia, New Taipei City
@@ -263,7 +263,7 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
                   text['generationError'] ??
                       'Failed to generate itinerary. Please try again.',
                 ),
-                backgroundColor: Colors.red.shade700,
+                backgroundColor: const Color(0xFFC6006E),
               ),
             );
           },
@@ -432,7 +432,7 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
         background: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF3F4D38), Color(0xFF79926C)],
+              colors: [Color(0xFF0079BF), Color(0xFF0E9A33)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -660,7 +660,7 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
                 children: [
                   Icon(
                     Icons.location_pin,
-                    color: Color(0xFF515F49),
+                    color: Color(0xFF0E9A33),
                     size: 38,
                     shadows: [
                       Shadow(
@@ -958,13 +958,13 @@ class _SectionLabel extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, color: const Color(0xFF515F49), size: 18),
+            Icon(icon, color: const Color(0xFF0E9A33), size: 18),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 title,
                 style: const TextStyle(
-                  color: Color(0xFF515F49),
+                  color: Color(0xFF0E9A33),
                   fontSize: 15,
                   fontWeight: FontWeight.w900,
                 ),

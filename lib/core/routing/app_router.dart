@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:peilar_superapp/features/landing/presentation/pages/landing_page.dart';
 import 'package:peilar_superapp/features/landing/presentation/pages/feature_detail_page.dart';
 import 'package:peilar_superapp/features/auth/presentation/pages/student_bind_page.dart';
+import 'package:peilar_superapp/features/auth/presentation/pages/card_design_edit_page.dart';
 import 'package:peilar_superapp/features/itinerary/presentation/pages/ai_itinerary_page.dart';
 import 'package:peilar_superapp/features/itinerary/presentation/pages/itinerary_result_page.dart';
 import 'package:peilar_superapp/features/qr_scanner/presentation/pages/qr_scanner_page.dart';
@@ -48,6 +49,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/secondhand',
       builder: (context, state) => const SecondhandMarketplacePage(),
+    ),
+    GoRoute(
+      path: '/card-design-edit',
+      builder: (context, state) => const CardDesignEditPage(),
     ),
   ],
 );

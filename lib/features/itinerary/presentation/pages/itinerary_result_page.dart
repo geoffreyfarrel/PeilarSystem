@@ -9,7 +9,7 @@ import '../providers/itinerary_provider.dart';
 class ItineraryResultPage extends ConsumerWidget {
   const ItineraryResultPage({super.key});
 
-  static const Color _darkGreen = Color(0xFF515F49);
+  static const Color _darkGreen = Color(0xFF0E9A33);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,7 +50,7 @@ class _ResultView extends ConsumerWidget {
 
   const _ResultView({required this.result, required this.text});
 
-  static const Color _darkGreen = Color(0xFF515F49);
+  static const Color _darkGreen = Color(0xFF0E9A33);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -129,7 +129,7 @@ class _ResultView extends ConsumerWidget {
                           children: [
                             Icon(
                               Icons.location_pin,
-                              color: Color(0xFF515F49),
+                              color: Color(0xFF0E9A33),
                               size: 36,
                               shadows: [
                                 Shadow(
@@ -204,8 +204,8 @@ class _StopCard extends StatelessWidget {
 
   const _StopCard({required this.stop, required this.isFirst});
 
-  static const Color _darkGreen = Color(0xFF515F49);
-  static const Color _lightGreen = Color(0xFFF2F6EF);
+  static const Color _darkGreen = Color(0xFF0E9A33);
+  static const Color _lightGreen = Color(0xFFE5F5EB);
   static const Color _border = Color(0xFFDDE7D7);
 
   @override
@@ -281,8 +281,8 @@ class _TipsCard extends StatelessWidget {
 
   const _TipsCard({required this.tips, required this.text});
 
-  static const Color _darkGreen = Color(0xFF515F49);
-  static const Color _lightGreen = Color(0xFFF2F6EF);
+  static const Color _darkGreen = Color(0xFF0E9A33);
+  static const Color _lightGreen = Color(0xFFE5F5EB);
 
   @override
   Widget build(BuildContext context) {
@@ -344,14 +344,14 @@ class _ErrorView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline, color: Colors.red.shade300, size: 52),
+              Icon(Icons.error_outline, color: const Color(0xFFC6006E), size: 52),
               const SizedBox(height: 16),
               Text(
                 text['generationError'] ??
                     'Failed to generate itinerary. Please try again.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Color(0xFF515F49),
+                  color: Color(0xFF0E9A33),
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -362,7 +362,7 @@ class _ErrorView extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back, size: 18),
                 label: Text(text['tryAgain'] ?? 'Try Again'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF515F49),
+                  backgroundColor: const Color(0xFF0E9A33),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

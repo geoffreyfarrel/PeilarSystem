@@ -21,12 +21,12 @@ class FeatureDetailPage extends ConsumerStatefulWidget {
 }
 
 class _FeatureDetailPageState extends ConsumerState<FeatureDetailPage> {
-  static const Color ahhBlue = Color(0xFF3D4EB0);
-  static const Color ahhLightBlue = Color(0xFFE2E5F4);
-  static const Color ahhBackground = Color(0xFFF8F8F8);
-  static const Color ahhText = Color(0xFF111111);
-  static const Color ahhGrey = Color(0xFF6E6F79);
-  static const Color peilarGreen = Color(0xFF515F49);
+  static const Color ahhBlue = Color(0xFF0079BF);
+  static const Color ahhLightBlue = Color(0xFFE3F2FB);
+  static const Color ahhBackground = Color(0xFFF7F7F7);
+  static const Color ahhText = Color(0xFF2F2929);
+  static const Color ahhGrey = Color(0xFF646363);
+  static const Color peilarGreen = Color(0xFF0E9A33);
 
   Duration laundryCountdown = const Duration(minutes: 23, seconds: 45);
   Timer? timer;
@@ -142,7 +142,7 @@ class _FeatureDetailPageState extends ConsumerState<FeatureDetailPage> {
                       title: text['studentOnlyTitle'] ?? 'Student ID Required',
                       subtitle: text['studentOnlyDesc'] ??
                           'This feature unlocks after Student ID verification.',
-                      color: const Color(0xFF4EA3E7),
+                      color: const Color(0xFF0079BF),
                     ),
                   ],
                   const SizedBox(height: 16),
@@ -151,7 +151,7 @@ class _FeatureDetailPageState extends ConsumerState<FeatureDetailPage> {
                     title: text['clickableDemo'] ?? 'Clickable Demo',
                     subtitle: text['clickableDemoDesc'] ??
                         'This page is a working placeholder for the selected module.',
-                    color: const Color(0xFF79926C),
+                    color: const Color(0xFF0E9A33),
                   ),
                   if (widget.featureId == 'travel-hub' ||
                       widget.featureId == 'tourism-loop' ||
@@ -162,7 +162,7 @@ class _FeatureDetailPageState extends ConsumerState<FeatureDetailPage> {
                       title: text['tourismLoopTitle'] ?? 'Sanxia Tourism Loop',
                       subtitle: text['tourismLoopDesc'] ??
                           'AI recommends local food, heritage sites, and hiking trails.',
-                      color: Colors.orange,
+                      color: const Color(0xFFEDA944),
                     ),
                     const SizedBox(height: 18),
                     SizedBox(
@@ -260,7 +260,7 @@ class _AhhMobileScaffold extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        color: Color(0xFF111111),
+                        color: Color(0xFF2F2929),
                         fontSize: 22,
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w600,
@@ -344,8 +344,8 @@ class _AhhPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = soft ? const Color(0xFF3D4EB0) : Colors.white;
-    final background = soft ? const Color(0xFFE2E5F4) : const Color(0xFF3D4EB0);
+    final foreground = soft ? const Color(0xFF0079BF) : Colors.white;
+    final background = soft ? const Color(0xFFE3F2FB) : const Color(0xFF0079BF);
 
     return SizedBox(
       height: 48,
@@ -462,7 +462,7 @@ class _LaundryWelcomeScreen extends StatelessWidget {
             isZh ? '三步驟完成校園洗衣。' : 'Laundry experience in 3 easy steps.',
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Color(0xFF6E6F79),
+              color: Color(0xFF646363),
               fontSize: 16,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w400,
@@ -473,7 +473,7 @@ class _LaundryWelcomeScreen extends StatelessWidget {
             width: 280,
             height: 280,
             decoration: BoxDecoration(
-              color: const Color(0xFFE2E5F4),
+              color: const Color(0xFFE3F2FB),
               borderRadius: BorderRadius.circular(42),
             ),
             child: Stack(
@@ -494,7 +494,7 @@ class _LaundryWelcomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.local_laundry_service, size: 92, color: Color(0xFF3D4EB0)),
+                const Icon(Icons.local_laundry_service, size: 92, color: Color(0xFF0079BF)),
                 Positioned(
                   right: 44,
                   top: 54,
@@ -537,7 +537,7 @@ class _FloatingIconBadge extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(icon, color: const Color(0xFF3D4EB0), size: 26),
+      child: Icon(icon, color: const Color(0xFF0079BF), size: 26),
     );
   }
 }
@@ -560,7 +560,7 @@ class _LaundryLocationScreen extends StatelessWidget {
           Text(
             isZh ? '常用地點' : 'Saved locations',
             style: const TextStyle(
-              color: Color(0xFF6E6F79),
+              color: Color(0xFF646363),
               fontSize: 16,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w400,
@@ -599,7 +599,7 @@ class _LaundryLocationScreen extends StatelessWidget {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF3D4EB0),
+                            color: const Color(0xFF0079BF),
                             borderRadius: BorderRadius.circular(22),
                             boxShadow: [
                               BoxShadow(
@@ -663,7 +663,7 @@ class _LaundryLocationScreen extends StatelessWidget {
             child: Text(
               isZh ? '北大宿舍洗衣間 A 棟' : 'NTPU Dorm Laundry, Building A',
               style: const TextStyle(
-                color: Color(0xFF6E6F79),
+                color: Color(0xFF646363),
                 fontSize: 16,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w400,
@@ -689,17 +689,17 @@ class _AhhSearchBar extends StatelessWidget {
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF3D4EB0),
+        color: const Color(0xFF0079BF),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.search, color: Color(0xFFE2E5F4), size: 24),
+          const Icon(Icons.search, color: Color(0xFFE3F2FB), size: 24),
           const SizedBox(width: 8),
           Text(
             hint,
             style: const TextStyle(
-              color: Color(0xFFE2E5F4),
+              color: Color(0xFFE3F2FB),
               fontSize: 16,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w400,
@@ -724,12 +724,12 @@ class _SavedLocationCard extends StatelessWidget {
       height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F8F8),
+        color: const Color(0xFFF7F7F7),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF3D4EB0), size: 24),
+          Icon(icon, color: const Color(0xFF0079BF), size: 24),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -750,7 +750,7 @@ class _SavedLocationCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Color(0xFF6E6F79),
+                    color: Color(0xFF646363),
                     fontSize: 12,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w400,
@@ -759,7 +759,7 @@ class _SavedLocationCard extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: Color(0xFF6E6F79)),
+          const Icon(Icons.chevron_right, color: Color(0xFF646363)),
         ],
       ),
     );
@@ -832,7 +832,7 @@ class _LaundryMachineScreen extends StatelessWidget {
                 children: [
                   _StatusChip(icon: Icons.check_circle_outline, label: isZh ? '營業中' : 'Open'),
                   const SizedBox(width: 18),
-                  Container(width: 1, height: 22, color: const Color(0xFF6E6F79)),
+                  Container(width: 1, height: 22, color: const Color(0xFF646363)),
                   const SizedBox(width: 18),
                   _StatusChip(icon: Icons.local_laundry_service, label: isZh ? '11 台可用' : '11 machines available'),
                 ],
@@ -914,13 +914,13 @@ class _StatusChip extends StatelessWidget {
             color: const Color(0x19008000),
             borderRadius: BorderRadius.circular(4.33),
           ),
-          child: Icon(icon, color: const Color(0xFF3D4EB0), size: 14),
+          child: Icon(icon, color: const Color(0xFF0079BF), size: 14),
         ),
         const SizedBox(width: 8),
         Text(
           label,
           style: const TextStyle(
-            color: Color(0xFF6E6F79),
+            color: Color(0xFF646363),
             fontSize: 12,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w400,
@@ -940,9 +940,9 @@ class _MachineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? const Color(0xFF3D4EB0) : const Color(0xFFF8F8F8);
+    final color = selected ? const Color(0xFF0079BF) : const Color(0xFFF7F7F7);
     final textColor = selected ? Colors.white : Colors.black;
-    final detailColor = selected ? const Color(0xFFF8F3EA) : const Color(0xFF6E6F79);
+    final detailColor = selected ? const Color(0xFFFFF3DC) : const Color(0xFF646363);
 
     return InkWell(
       onTap: onTap,
@@ -995,12 +995,12 @@ class _WasherIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dotColor = const Color(0xFF3D4EB0);
+    final dotColor = const Color(0xFF0079BF);
     return Container(
       width: 31.18,
       height: 33.37,
       decoration: BoxDecoration(
-        color: const Color(0xFFE2E5F4),
+        color: const Color(0xFFE3F2FB),
         borderRadius: BorderRadius.circular(41.28),
       ),
       child: Stack(
@@ -1061,7 +1061,7 @@ class _LaundryBottomNav extends StatelessWidget {
     return Container(
       height: 112.7,
       decoration: BoxDecoration(
-        color: const Color(0xFF3D4EB0),
+        color: const Color(0xFF0079BF),
         borderRadius: BorderRadius.circular(26.26),
       ),
       child: Column(
@@ -1081,7 +1081,7 @@ class _LaundryBottomNav extends StatelessWidget {
                   children: [
                     Icon(
                       items[index].icon,
-                      color: selected ? const Color(0xFF3D4EB0) : Colors.white,
+                      color: selected ? const Color(0xFF0079BF) : Colors.white,
                       size: 24,
                     ),
                     if (selected) ...[
@@ -1089,7 +1089,7 @@ class _LaundryBottomNav extends StatelessWidget {
                       Text(
                         items[index].label,
                         style: const TextStyle(
-                          color: Color(0xFF3D4EB0),
+                          color: Color(0xFF0079BF),
                           fontSize: 13.13,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
@@ -1144,7 +1144,7 @@ class _LaundryScanScreen extends StatelessWidget {
             isZh ? '請掃描洗衣機上的 QR code' : 'Please scan the machine QR code',
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Color(0xFF6E6F79),
+              color: Color(0xFF646363),
               fontSize: 16,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w400,
@@ -1155,7 +1155,7 @@ class _LaundryScanScreen extends StatelessWidget {
             width: 245,
             height: 245,
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F8F8),
+              color: const Color(0xFFF7F7F7),
               borderRadius: BorderRadius.circular(28),
             ),
             child: Stack(
@@ -1180,7 +1180,7 @@ class _LaundryScanScreen extends StatelessWidget {
           Text(
             isZh ? '掃描中...' : 'Scanning code...',
             style: const TextStyle(
-              color: Color(0xFF6E6F79),
+              color: Color(0xFF646363),
               fontSize: 16,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w400,
@@ -1195,7 +1195,7 @@ class _LaundryScanScreen extends StatelessWidget {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF3D4EB0),
+                  color: const Color(0xFF0079BF),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Icon(Icons.qr_code_scanner, color: Colors.white),
@@ -1256,13 +1256,13 @@ class _LaundryPaymentScreen extends StatelessWidget {
           icon: Icons.confirmation_number,
           title: isZh ? '優惠券' : 'Coupons',
           subtitle: isZh ? '目前無可用優惠券' : '0 coupons available',
-          trailing: const Icon(Icons.chevron_right, color: Color(0xFF6E6F79)),
+          trailing: const Icon(Icons.chevron_right, color: Color(0xFF646363)),
         ),
         const SizedBox(height: 24),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 24),
           decoration: BoxDecoration(
-            color: const Color(0xFFE2E5F4).withValues(alpha: 0.4),
+            color: const Color(0xFFE3F2FB).withValues(alpha: 0.4),
           ),
           child: Column(
             children: [
@@ -1291,7 +1291,7 @@ class _LaundryPaymentScreen extends StatelessWidget {
             width: 146,
             height: 60,
             decoration: BoxDecoration(
-              color: const Color(0xFFE2E5F4).withValues(alpha: 0.4),
+              color: const Color(0xFFE3F2FB).withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Row(
@@ -1336,7 +1336,7 @@ class _PaymentInfoCard extends StatelessWidget {
       height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 18),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F8F8),
+        color: const Color(0xFFF7F7F7),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -1345,10 +1345,10 @@ class _PaymentInfoCard extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: const Color(0xFFE2E5F4),
+              color: const Color(0xFFE3F2FB),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: const Color(0xFF3D4EB0)),
+            child: Icon(icon, color: const Color(0xFF0079BF)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1368,7 +1368,7 @@ class _PaymentInfoCard extends StatelessWidget {
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    color: Color(0xFF6E6F79),
+                    color: Color(0xFF646363),
                     fontSize: 12,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w400,
@@ -1415,11 +1415,11 @@ class _PaymentMethodCard extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: outlined ? Colors.white : const Color(0xFFE2E5F4),
+              color: outlined ? Colors.white : const Color(0xFFE3F2FB),
               borderRadius: BorderRadius.circular(8),
-              border: outlined ? Border.all(color: const Color(0xFFE2E5F4)) : null,
+              border: outlined ? Border.all(color: const Color(0xFFE3F2FB)) : null,
             ),
-            child: Icon(icon, color: const Color(0xFF3D4EB0)),
+            child: Icon(icon, color: const Color(0xFF0079BF)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1439,7 +1439,7 @@ class _PaymentMethodCard extends StatelessWidget {
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    color: Color(0xFF6E6F79),
+                    color: Color(0xFF646363),
                     fontSize: 12,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w400,
@@ -1451,7 +1451,7 @@ class _PaymentMethodCard extends StatelessWidget {
           Text(
             amount,
             style: const TextStyle(
-              color: Color(0xFF3D4EB0),
+              color: Color(0xFF0079BF),
               fontSize: 16,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w500,
@@ -1495,7 +1495,7 @@ class _LaundryStartedScreen extends StatelessWidget {
           Text(
             isZh ? '完成時我們會通知你。' : 'We will notify when it is done!',
             style: const TextStyle(
-              color: Color(0xFF6E6F79),
+              color: Color(0xFF646363),
               fontSize: 16,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w400,
@@ -1515,7 +1515,7 @@ class _LaundryStartedScreen extends StatelessWidget {
                     value: 0.72,
                     strokeWidth: 18,
                     backgroundColor: const Color(0xFFF5F5F5),
-                    color: const Color(0xFF3D4EB0),
+                    color: const Color(0xFF0079BF),
                   ),
                 ),
                 Column(
@@ -1543,7 +1543,7 @@ class _LaundryStartedScreen extends StatelessWidget {
                     Text(
                       countdownText,
                       style: const TextStyle(
-                        color: Color(0xFF6E6F79),
+                        color: Color(0xFF646363),
                         fontSize: 12,
                         fontFamily: 'Poppins',
                       ),
@@ -1558,7 +1558,7 @@ class _LaundryStartedScreen extends StatelessWidget {
             icon: Icons.local_laundry_service,
             title: 'Machine No. $selectedMachine',
             subtitle: isZh ? '北大宿舍 A 棟' : 'NTPU Dorm A',
-            trailing: const Icon(Icons.notifications_active, color: Color(0xFF3D4EB0)),
+            trailing: const Icon(Icons.notifications_active, color: Color(0xFF0079BF)),
           ),
           const Spacer(),
           _AhhPrimaryButton(label: isZh ? '建立新訂單' : 'Place New order', onPressed: onNewOrder),
@@ -1587,10 +1587,10 @@ class _DigitalEasyCardAhhStudioState extends State<_DigitalEasyCardAhhStudio> {
   Widget build(BuildContext context) {
     final tabs = isZh ? ['藝術家', '大學', '限定'] : ['Artists', 'University', 'Limited'];
     final designs = [
-      _CardDesign('NTPU 2026', isZh ? '北大年度款' : 'University yearly design', const [Color(0xFF1E293B), Color(0xFF3D4EB0)], Icons.school, true),
-      _CardDesign('Sanxia Ink', isZh ? '台灣藝術家合作' : 'Taiwan artist collab', const [Color(0xFF141414), Color(0xFFE52D88)], Icons.brush, false),
-      _CardDesign('Cherry Rail', isZh ? '期間限定' : 'Limited release', const [Color(0xFF7C2D12), Color(0xFFFFED69)], Icons.confirmation_number, true),
-      _CardDesign('Dorm Life', isZh ? '宿舍生活款' : 'Campus dorm series', const [Color(0xFF065F46), Color(0xFF53A657)], Icons.apartment, false),
+      _CardDesign('NTPU 2026', isZh ? '北大年度款' : 'University yearly design', const [Color(0xFF2F2929), Color(0xFF0079BF)], Icons.school, true),
+      _CardDesign('Sanxia Ink', isZh ? '台灣藝術家合作' : 'Taiwan artist collab', const [Color(0xFF2F2929), Color(0xFFC6006E)], Icons.brush, false),
+      _CardDesign('Cherry Rail', isZh ? '期間限定' : 'Limited release', const [Color(0xFFC6006E), Color(0xFFEDA944)], Icons.confirmation_number, true),
+      _CardDesign('Dorm Life', isZh ? '宿舍生活款' : 'Campus dorm series', const [Color(0xFF0E9A33), Color(0xFF0079BF)], Icons.apartment, false),
     ];
     final current = designs[selectedDesign];
 
@@ -1601,7 +1601,7 @@ class _DigitalEasyCardAhhStudioState extends State<_DigitalEasyCardAhhStudio> {
           isZh ? '像 UT 一樣選擇你的卡面' : 'Choose your card face like UT collections',
           textAlign: TextAlign.center,
           style: const TextStyle(
-            color: Color(0xFF6E6F79),
+            color: Color(0xFF646363),
             fontSize: 16,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w400,
@@ -1622,13 +1622,13 @@ class _DigitalEasyCardAhhStudioState extends State<_DigitalEasyCardAhhStudio> {
                   margin: EdgeInsets.only(right: index == tabs.length - 1 ? 0 : 8),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: selected ? const Color(0xFF3D4EB0) : const Color(0xFFF8F8F8),
+                    color: selected ? const Color(0xFF0079BF) : const Color(0xFFF7F7F7),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     tabs[index],
                     style: TextStyle(
-                      color: selected ? Colors.white : const Color(0xFF6E6F79),
+                      color: selected ? Colors.white : const Color(0xFF646363),
                       fontSize: 13,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
@@ -1697,7 +1697,7 @@ class _EasyCardPreview extends StatelessWidget {
       height: 218,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F8F8),
+        color: const Color(0xFFF7F7F7),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -1820,17 +1820,17 @@ class _MiniActionPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFE2E5F4),
+        color: const Color(0xFFE3F2FB),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF3D4EB0), size: 16),
+          Icon(icon, color: const Color(0xFF0079BF), size: 16),
           const SizedBox(width: 5),
           Text(
             label,
             style: const TextStyle(
-              color: Color(0xFF3D4EB0),
+              color: Color(0xFF0079BF),
               fontSize: 12,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w700,
@@ -1857,9 +1857,9 @@ class _EasyCardDesignTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFFE2E5F4) : const Color(0xFFF8F8F8),
+          color: selected ? const Color(0xFFE3F2FB) : const Color(0xFFF7F7F7),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: selected ? const Color(0xFF3D4EB0) : Colors.transparent, width: 1.2),
+          border: Border.all(color: selected ? const Color(0xFF0079BF) : Colors.transparent, width: 1.2),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1891,7 +1891,7 @@ class _EasyCardDesignTile extends StatelessWidget {
                   ),
                 ),
                 if (design.limited)
-                  const Icon(Icons.lock_clock, color: Color(0xFFE52D88), size: 16),
+                  const Icon(Icons.lock_clock, color: Color(0xFFC6006E), size: 16),
               ],
             ),
             Text(
@@ -1899,7 +1899,7 @@ class _EasyCardDesignTile extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Color(0xFF6E6F79),
+                color: Color(0xFF646363),
                 fontSize: 11,
                 fontFamily: 'Poppins',
               ),
@@ -1959,7 +1959,7 @@ class _StudentMarketAhhPageState extends State<_StudentMarketAhhPage> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFE2E5F4),
+            color: const Color(0xFFE3F2FB),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
@@ -1968,7 +1968,7 @@ class _StudentMarketAhhPageState extends State<_StudentMarketAhhPage> {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF3D4EB0),
+                  color: const Color(0xFF0079BF),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Icon(Icons.verified_user, color: Colors.white),
@@ -1991,7 +1991,7 @@ class _StudentMarketAhhPageState extends State<_StudentMarketAhhPage> {
                     Text(
                       isZh ? '需綁定學生證，建議校內面交。' : 'Student ID required. Campus pickup recommended.',
                       style: const TextStyle(
-                        color: Color(0xFF6E6F79),
+                        color: Color(0xFF646363),
                         fontSize: 12,
                         fontFamily: 'Poppins',
                       ),
@@ -2049,7 +2049,7 @@ class _StudentMarketAhhPageState extends State<_StudentMarketAhhPage> {
             Text(
               isZh ? '查看全部' : 'See all',
               style: const TextStyle(
-                color: Color(0xFF3D4EB0),
+                color: Color(0xFF0079BF),
                 fontSize: 13,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w700,
@@ -2093,25 +2093,25 @@ class _MarketCategoryRow extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFFE2E5F4) : Colors.white,
+          color: selected ? const Color(0xFFE3F2FB) : Colors.white,
           border: isLast ? null : const Border(bottom: BorderSide(color: Color(0xFFDADADA))),
         ),
         child: Row(
           children: [
-            Icon(icon, color: selected ? const Color(0xFF3D4EB0) : const Color(0xFF363636), size: 20),
+            Icon(icon, color: selected ? const Color(0xFF0079BF) : const Color(0xFF2F2929), size: 20),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 label,
                 style: TextStyle(
-                  color: selected ? const Color(0xFF3D4EB0) : const Color(0xFF363636),
+                  color: selected ? const Color(0xFF0079BF) : const Color(0xFF2F2929),
                   fontSize: 16,
                   fontFamily: 'Montserrat',
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right, color: Color(0xFF6E6F79), size: 18),
+            const Icon(Icons.chevron_right, color: Color(0xFF646363), size: 18),
           ],
         ),
       ),
@@ -2139,7 +2139,7 @@ class _MarketListingCard extends StatelessWidget {
       height: 78,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F8F8),
+        color: const Color(0xFFF7F7F7),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -2148,10 +2148,10 @@ class _MarketListingCard extends StatelessWidget {
             width: 54,
             height: 54,
             decoration: BoxDecoration(
-              color: const Color(0xFFE2E5F4),
+              color: const Color(0xFFE3F2FB),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(listing.icon, color: const Color(0xFF3D4EB0)),
+            child: Icon(listing.icon, color: const Color(0xFF0079BF)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -2175,7 +2175,7 @@ class _MarketListingCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Color(0xFF6E6F79),
+                    color: Color(0xFF646363),
                     fontSize: 12,
                     fontFamily: 'Poppins',
                   ),
@@ -2186,7 +2186,7 @@ class _MarketListingCard extends StatelessWidget {
           Text(
             listing.price,
             style: const TextStyle(
-              color: Color(0xFF3D4EB0),
+              color: Color(0xFF0079BF),
               fontSize: 15,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w700,
@@ -2215,7 +2215,7 @@ class _FeatureHero extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF515F49), Color(0xFF79926C)],
+          colors: [Color(0xFF0E9A33), Color(0xFF0E9A33)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -2230,7 +2230,7 @@ class _FeatureHero extends StatelessWidget {
               color: Colors.white,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: const Color(0xFF515F49), size: 42),
+            child: Icon(icon, color: const Color(0xFF0E9A33), size: 42),
           ),
           const SizedBox(height: 18),
           Text(

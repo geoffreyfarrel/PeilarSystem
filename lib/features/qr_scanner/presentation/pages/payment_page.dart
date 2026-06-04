@@ -32,7 +32,7 @@ class PaymentPage extends ConsumerWidget {
     final isProcessing = payment.status == PaymentStatus.processing;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: const Color(0xFFF7F7F7),
       body: Column(
         children: [
           _Header(qr: qr, text: text),
@@ -82,7 +82,7 @@ class _Header extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1A6FA0), Color(0xFF2D9CDB)],
+          colors: [Color(0xFF0079BF), Color(0xFF0079BF)],
         ),
       ),
       child: SafeArea(
@@ -173,8 +173,8 @@ class _QrTypeBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: isDynamic
-            ? Colors.orange.withValues(alpha: 0.9)
-            : Colors.green.withValues(alpha: 0.85),
+            ? const Color(0xFFEDA944).withValues(alpha: 0.9)
+            : const Color(0xFF0E9A33).withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(99),
       ),
       child: Text(
@@ -230,7 +230,7 @@ class _AmountCard extends StatelessWidget {
             Text(
               text['paymentAmount'] ?? 'Payment Amount',
               style: const TextStyle(
-                color: Color(0xFF6B7280),
+                color: Color(0xFF646363),
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -239,7 +239,7 @@ class _AmountCard extends StatelessWidget {
             Text(
               hasInput ? 'NT\$ ${payment.amountInput}' : (text['enterAmount'] ?? 'Enter Amount'),
               style: TextStyle(
-                color: hasInput ? const Color(0xFF1A1A2E) : const Color(0xFFD1D5DB),
+                color: hasInput ? const Color(0xFF2F2929) : const Color(0xFFD1D5DB),
                 fontSize: 40,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -1,
@@ -250,8 +250,8 @@ class _AmountCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: qr.isDynamic
-                    ? const Color(0xFFFFF3E0)
-                    : const Color(0xFFE8F5E9),
+                    ? const Color(0xFFFFF3DC)
+                    : const Color(0xFFE5F5EB),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -260,8 +260,8 @@ class _AmountCard extends StatelessWidget {
                     qr.isDynamic ? Icons.lock_rounded : Icons.edit_rounded,
                     size: 15,
                     color: qr.isDynamic
-                        ? const Color(0xFFE65100)
-                        : const Color(0xFF2E7D32),
+                        ? const Color(0xFFEDA944)
+                        : const Color(0xFF0E9A33),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -273,8 +273,8 @@ class _AmountCard extends StatelessWidget {
                               'Please enter the payment amount'),
                       style: TextStyle(
                         color: qr.isDynamic
-                            ? const Color(0xFFE65100)
-                            : const Color(0xFF2E7D32),
+                            ? const Color(0xFFEDA944)
+                            : const Color(0xFF0E9A33),
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -354,7 +354,7 @@ class _NumKey extends StatelessWidget {
       child: Container(
         height: 60,
         decoration: BoxDecoration(
-          color: isDelete ? const Color(0xFFFEE2E2) : Colors.white,
+          color: isDelete ? const Color(0xFFFCE4F0) : Colors.white,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
@@ -368,13 +368,13 @@ class _NumKey extends StatelessWidget {
           child: isDelete
               ? const Icon(
                   Icons.backspace_outlined,
-                  color: Color(0xFFDC2626),
+                  color: Color(0xFFC6006E),
                   size: 22,
                 )
               : Text(
                   label,
                   style: const TextStyle(
-                    color: Color(0xFF1A1A2E),
+                    color: Color(0xFF2F2929),
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
                   ),
@@ -412,15 +412,15 @@ class _PayButton extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: canPay && !isProcessing
                 ? const LinearGradient(
-                    colors: [Color(0xFF27AE60), Color(0xFF2ECC71)],
+                    colors: [Color(0xFF0E9A33), Color(0xFF0E9A33)],
                   )
                 : null,
-            color: !canPay || isProcessing ? const Color(0xFFE5E7EB) : null,
+            color: !canPay || isProcessing ? const Color(0xFFE3E3E3) : null,
             borderRadius: BorderRadius.circular(16),
             boxShadow: canPay && !isProcessing
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF27AE60).withValues(alpha: 0.35),
+                      color: const Color(0xFF0E9A33).withValues(alpha: 0.35),
                       blurRadius: 14,
                       offset: const Offset(0, 6),
                     ),
@@ -449,7 +449,7 @@ class _PayButton extends StatelessWidget {
                             Icons.lock_rounded,
                             color: canPay
                                 ? Colors.white
-                                : const Color(0xFF9CA3AF),
+                                : const Color(0xFF646363),
                             size: 18,
                           ),
                           const SizedBox(width: 8),
@@ -458,7 +458,7 @@ class _PayButton extends StatelessWidget {
                             style: TextStyle(
                               color: canPay
                                   ? Colors.white
-                                  : const Color(0xFF9CA3AF),
+                                  : const Color(0xFF646363),
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),

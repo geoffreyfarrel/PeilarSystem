@@ -179,6 +179,7 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'scanFillHint': 'QR 掃描後將自動填入',
     'orManualEntry': '或手動輸入',
     'scanSuccess': '掃描成功！資料已自動填入。',
+    'editCardDesign': '編輯卡片外觀',
   },
 
   AppLanguage.en: {
@@ -347,5 +348,6 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'scanFillHint': 'QR scan will auto-fill the fields',
     'orManualEntry': 'Or enter manually',
     'scanSuccess': 'Scanned successfully! Fields have been filled in.',
+    'editCardDesign': 'Edit Card Design',
   },
 };

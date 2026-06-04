@@ -51,7 +51,7 @@ class FeatureCategoryList extends ConsumerWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(item.iconData, size: 28, color: Colors.blueGrey),
+                          Icon(item.iconData, size: 28, color: const Color(0xFF0079BF)),
                           const SizedBox(height: 8),
                           Text(
                             item.title,
@@ -66,7 +66,7 @@ class FeatureCategoryList extends ConsumerWidget {
                   },
                 ),
                 if (index < categories.length - 1)
-                  const Divider(height: 32, thickness: 8, color: Colors.black12),
+                  const Divider(height: 32, thickness: 8, color: Color(0xFFE3E3E3)),
               ],
             );
           },

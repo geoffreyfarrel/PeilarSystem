@@ -69,7 +69,7 @@ class _ToggleItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: selected
-              ? const Color(0xFF4EA3E7)
+              ? const Color(0xFF0079BF)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
         ),

@@ -58,7 +58,7 @@ class StudentVirtualCard extends ConsumerWidget {
                   width: 130,
                   height: 120,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFF59E0B),
+                    color: Color(0xFFEDA944),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(60),
@@ -76,7 +76,7 @@ class StudentVirtualCard extends ConsumerWidget {
                   width: 145,
                   height: 130,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF3B9FE8),
+                    color: Color(0xFF0079BF),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(90),
                       bottomLeft: Radius.circular(70),
@@ -94,7 +94,7 @@ class StudentVirtualCard extends ConsumerWidget {
                   width: 160,
                   height: 145,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFE0157A),
+                    color: Color(0xFFC6006E),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(50),
                       topRight: Radius.circular(95),
@@ -112,7 +112,7 @@ class StudentVirtualCard extends ConsumerWidget {
                   width: 145,
                   height: 110,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF2E9E5B),
+                    color: Color(0xFF0E9A33),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(80),
                       topRight: Radius.circular(40),
@@ -250,9 +250,9 @@ class _PinwheelPainter extends CustomPainter {
     final cy = size.height * 0.45;
     final r = size.width * 0.4;
 
-    _drawPetal(canvas, cx, cy, r, -80 * pi / 180, const Color(0xFFF59E0B));
-    _drawPetal(canvas, cx, cy, r, 40 * pi / 180, const Color(0xFF3B9FE8));
-    _drawPetal(canvas, cx, cy, r, 160 * pi / 180, const Color(0xFF2E9E5B));
+    _drawPetal(canvas, cx, cy, r, -80 * pi / 180, const Color(0xFFEDA944));
+    _drawPetal(canvas, cx, cy, r, 40 * pi / 180, const Color(0xFF0079BF));
+    _drawPetal(canvas, cx, cy, r, 160 * pi / 180, const Color(0xFF0E9A33));
   }
 
   void _drawPetal(
@@ -340,7 +340,7 @@ class _CardActionModal extends ConsumerWidget {
                 child: _ActionButton(
                   icon: Icons.qr_code_scanner,
                   label: texts['qrScanner']!,
-                  color: const Color(0xFF4EA3E7),
+                  color: const Color(0xFF0079BF),
                   onTap: onScanQr,
                 ),
               ),
@@ -349,7 +349,7 @@ class _CardActionModal extends ConsumerWidget {
                 child: _ActionButton(
                   icon: Icons.nfc,
                   label: texts['nfc']!,
-                  color: const Color(0xFF515F49),
+                  color: const Color(0xFF0E9A33),
                 ),
               ),
             ],

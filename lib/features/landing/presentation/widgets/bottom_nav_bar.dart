@@ -111,7 +111,7 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? const Color(0xFF4EA3E7) : Colors.grey.shade400;
+    final color = selected ? const Color(0xFF0079BF) : Colors.grey.shade400;
 
     return Expanded(
       child: InkWell(
@@ -125,7 +125,7 @@ class _NavItem extends StatelessWidget {
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: selected ? const Color(0xFF287DBD) : Colors.grey.shade500,
+                color: selected ? const Color(0xFF0079BF) : Colors.grey.shade500,
                 fontSize: 12,
                 fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
               ),
@@ -160,11 +160,11 @@ class _CenterRideCodeItem extends StatelessWidget {
                 width: 58,
                 height: 58,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4EA3E7),
+                  color: const Color(0xFF0079BF),
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF4EA3E7).withValues(alpha: 0.35),
+                      color: const Color(0xFF0079BF).withValues(alpha: 0.35),
                       blurRadius: 14,
                       offset: const Offset(0, 7),
                     ),
@@ -181,7 +181,7 @@ class _CenterRideCodeItem extends StatelessWidget {
                 label,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Color(0xFF287DBD),
+                  color: Color(0xFF0079BF),
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
                 ),

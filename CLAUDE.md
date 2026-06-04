@@ -43,6 +43,24 @@ AppLanguage.en: {
 },
 ```
 
+## Color Palette (REQUIRED)
+
+All UI components across the entire project **must** use only the following colors:
+
+| Role | Hex |
+|------|-----|
+| Primary | `#0079BF` |
+| Secondary | `#C6006E` |
+| Accent 1 | `#EDA944` |
+| Accent 2 | `#0E9A33` |
+| Neutral | `#F7F7F7` |
+
+- Never introduce colors outside this palette without explicit approval
+- Use the Primary color (`#0079BF`) for main actions, headers, and interactive elements
+- Use the Secondary color (`#C6006E`) for highlights, badges, and secondary actions
+- Use Accent colors (`#EDA944`, `#0E9A33`) sparingly for status indicators or decorative elements
+- Use the Neutral color (`#F7F7F7`) for backgrounds and surface areas
+
 ## Development Workflow
 
 ### Testing & Linting

@@ -138,7 +138,7 @@ class _Bubble extends StatelessWidget {
                     text,
                     style: TextStyle(
                       color: clickable
-                          ? const Color(0xFF00880C)
+                          ? const Color(0xFF0E9A33)
                           : const Color(0xFF2F2929),
                       fontSize: 13,
                       fontWeight: clickable ? FontWeight.w900 : FontWeight.w600,
@@ -150,7 +150,7 @@ class _Bubble extends StatelessWidget {
                   const Icon(
                     Icons.arrow_forward_ios,
                     size: 12,
-                    color: Color(0xFF00880C),
+                    color: Color(0xFF0E9A33),
                   ),
                 ],
               ],
