@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:maplibre_gl/maplibre_gl.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import '../../../landing/presentation/providers/language_provider.dart';
 import '../../../landing/presentation/widgets/language_toggle.dart';
@@ -25,20 +26,20 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
   static const Color _border = Color(0xFFDDE7D7);
 
   // Default: Sanxia, New Taipei City
-  static const LatLng _defaultLatLng = LatLng(24.9421, 121.3702);
-
-  // Free MapLibre tile style (Carto Voyager, no API key required)
-  static const String _mapStyle =
-      'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
+  static const LatLng _defaultCenter = LatLng(24.9421, 121.3702);
 
   final TextEditingController _locationCtrl = TextEditingController();
+  late final MapController _mapController;
   String? _selectedPlace;
-  LatLng? _selectedLatLng;
+  LatLng? _selectedPosition;
   List<Map<String, dynamic>> _suggestions = [];
   bool _showSuggestions = false;
   Timer? _debounce;
+  Timer? _mapDebounce;
   bool _loadingGps = false;
-  MapLibreMapController? _mapController;
+  bool _reverseGeocoding = false;
+  bool _mapReady = false;
+  LatLng? _lastGeocodedCenter;
 
   DateTime _date = DateTime(2026, 6, 20);
   String _travelWith = 'friends';
@@ -46,10 +47,17 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
   String _budget = '1k3k';
 
   @override
+  void initState() {
+    super.initState();
+    _mapController = MapController();
+  }
+
+  @override
   void dispose() {
     _locationCtrl.dispose();
     _debounce?.cancel();
-    // _mapController?.dispose();
+    _mapDebounce?.cancel();
+    _mapController.dispose();
     super.dispose();
   }
 
@@ -74,16 +82,14 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
         desiredAccuracy: LocationAccuracy.medium,
       );
       if (!mounted) return;
-      final latlng = LatLng(pos.latitude, pos.longitude);
-      setState(() => _selectedLatLng = latlng);
-      await _mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(latlng, 14),
-      );
-      await _reverseGeocode(latlng);
+      final geo = LatLng(pos.latitude, pos.longitude);
+      setState(() => _selectedPosition = geo);
+      if (_mapReady) _mapController.move(geo, 14);
+      await _reverseGeocode(geo);
     } catch (_) {
       // GPS unavailable (emulator etc.) — stay on default
       if (!mounted) return;
-      setState(() => _selectedLatLng = _defaultLatLng);
+      setState(() => _selectedPosition = _defaultCenter);
     } finally {
       if (mounted) setState(() => _loadingGps = false);
     }
@@ -113,7 +119,7 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
       final uri = Uri.parse(
         'https://nominatim.openstreetmap.org/search'
         '?q=${Uri.encodeComponent(input)}'
-        '&format=json&limit=5&addressdetails=1'
+        '&format=json&limit=3&addressdetails=1'
         '&accept-language=$lang&countrycodes=tw',
       );
       final res = await http.get(
@@ -122,7 +128,7 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
       );
       if (res.statusCode == 200 && mounted) {
         final list = jsonDecode(res.body) as List<dynamic>;
-        final results = list.cast<Map<String, dynamic>>().take(5).toList();
+        final results = list.cast<Map<String, dynamic>>().take(3).toList();
         setState(() {
           _suggestions = results;
           _showSuggestions = results.isNotEmpty;
@@ -145,22 +151,20 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
     });
 
     if (lat != null && lon != null) {
-      final latlng = LatLng(lat, lon);
-      setState(() => _selectedLatLng = latlng);
-      await _mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(latlng, 14),
-      );
+      final geo = LatLng(lat, lon);
+      setState(() => _selectedPosition = geo);
+      if (_mapReady) _mapController.move(geo, 14);
     }
   }
 
-  Future<void> _reverseGeocode(LatLng latlng) async {
+  Future<void> _reverseGeocode(LatLng geo) async {
     try {
       final lang = ref.read(languageProvider) == AppLanguage.zh
           ? 'zh-TW'
           : 'en';
       final uri = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse'
-        '?lat=${latlng.latitude}&lon=${latlng.longitude}'
+        '?lat=${geo.latitude}&lon=${geo.longitude}'
         '&format=json&accept-language=$lang',
       );
       final res = await http.get(
@@ -179,6 +183,13 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
         }
       }
     } catch (_) {}
+  }
+
+  Future<void> _reverseGeocodeFromMap(LatLng geo) async {
+    if (!mounted) return;
+    setState(() => _reverseGeocoding = true);
+    await _reverseGeocode(geo);
+    if (mounted) setState(() => _reverseGeocoding = false);
   }
 
   // ── Date ────────────────────────────────────────────────────────────────
@@ -218,11 +229,14 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
       return;
     }
 
+    final coords =
+        _selectedPosition ?? (_mapReady ? _mapController.camera.center : null);
+
     final lang = ref.read(languageProvider) == AppLanguage.zh ? 'zh' : 'en';
     final request = ItineraryRequest(
       location: _selectedPlace ?? location,
-      latitude: _selectedLatLng?.latitude,
-      longitude: _selectedLatLng?.longitude,
+      latitude: coords?.latitude,
+      longitude: coords?.longitude,
       date: _date,
       travelWith: _travelWith,
       interests: _interests.toList(),
@@ -231,7 +245,7 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
 
     ref
         .read(itineraryDestinationProvider.notifier)
-        .set((_selectedLatLng != null) ? _selectedLatLng : _defaultLatLng);
+        .set(coords ?? _defaultCenter);
     await ref.read(itineraryProvider.notifier).generate(request, lang);
     if (!mounted) return;
 
@@ -454,6 +468,19 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
             decoration: InputDecoration(
               hintText: text['wherePlaceholder'] ?? 'e.g. Sanxia Old Street',
               prefixIcon: const Icon(Icons.search, color: _green, size: 20),
+              suffixIcon: _reverseGeocoding
+                  ? const Padding(
+                      padding: EdgeInsets.all(12),
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: _green,
+                        ),
+                      ),
+                    )
+                  : null,
               hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
               filled: true,
               fillColor: _lightGreen,
@@ -567,7 +594,7 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
     );
   }
 
-  // ── MapLibre map ────────────────────────────────────────────────────────
+  // ── Map (flutter_map + Carto Voyager tiles) ─────────────────────────────
 
   Widget _buildMapCard() {
     return ClipRRect(
@@ -577,28 +604,54 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
         width: double.infinity,
         child: Stack(
           children: [
-            MapLibreMap(
-              styleString: _mapStyle,
-              initialCameraPosition: CameraPosition(
-                target: _selectedLatLng ?? _defaultLatLng,
-                zoom: 13,
+            RepaintBoundary(
+              child: FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: _selectedPosition ?? _defaultCenter,
+                  initialZoom: 13.0,
+                  onMapReady: () {
+                    _mapReady = true;
+                    if (_selectedPosition == null) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) _useGps();
+                      });
+                    }
+                  },
+                  onPositionChanged: (position, hasGesture) {
+                    if (hasGesture && mounted) {
+                      final center = position.center;
+                      setState(() {
+                        _selectedPosition = center;
+                        _showSuggestions = false;
+                      });
+                      // Skip API call when only zooming (center unchanged)
+                      final last = _lastGeocodedCenter;
+                      final moved = last == null ||
+                          (center.latitude - last.latitude).abs() > 1e-6 ||
+                          (center.longitude - last.longitude).abs() > 1e-6;
+                      if (moved) {
+                        _debounce?.cancel();
+                        _mapDebounce?.cancel();
+                        _mapDebounce = Timer(
+                          const Duration(milliseconds: 600),
+                          () {
+                            _lastGeocodedCenter = center;
+                            _reverseGeocodeFromMap(center);
+                          },
+                        );
+                      }
+                    }
+                  },
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.example.peilar_superapp',
+                  ),
+                ],
               ),
-              onMapCreated: (ctrl) {
-                _mapController = ctrl;
-                // Auto-GPS on first load if no location selected
-                if (_selectedLatLng == null) _useGps();
-              },
-              onCameraIdle: () {
-                final latlng = _mapController?.cameraPosition?.target;
-                if (latlng != null && mounted) {
-                  setState(() => _selectedLatLng = latlng);
-                }
-              },
-              myLocationEnabled: true,
-              myLocationRenderMode: MyLocationRenderMode.normal,
-              compassEnabled: false,
-              rotateGesturesEnabled: false,
-              tiltGesturesEnabled: false,
             ),
             // Center pin overlay
             const Center(
@@ -621,7 +674,52 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
                 ],
               ),
             ),
+            // Zoom buttons
+            Positioned(
+              bottom: 12,
+              right: 12,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildZoomButton(Icons.add, () {
+                    if (_mapReady) {
+                      _mapController.move(
+                        _mapController.camera.center,
+                        (_mapController.camera.zoom + 1).clamp(2.0, 18.0),
+                      );
+                    }
+                  }),
+                  const SizedBox(height: 4),
+                  _buildZoomButton(Icons.remove, () {
+                    if (_mapReady) {
+                      _mapController.move(
+                        _mapController.camera.center,
+                        (_mapController.camera.zoom - 1).clamp(2.0, 18.0),
+                      );
+                    }
+                  }),
+                ],
+              ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildZoomButton(IconData icon, VoidCallback onTap) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(8),
+      elevation: 2,
+      shadowColor: Colors.black26,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          width: 32,
+          height: 32,
+          child: Icon(icon, size: 18, color: _darkGreen),
         ),
       ),
     );
