@@ -17,11 +17,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/feature/:id',
       builder: (context, state) {
+        final extra = state.extra;
         return FeatureDetailPage(
           featureId: state.pathParameters['id'] ?? 'feature',
-          data: state.extra is Map<String, dynamic>
-              ? state.extra as Map<String, dynamic>
-              : null,
+          data: extra is Map ? Map<String, dynamic>.from(extra) : null,
         );
       },
     ),
@@ -48,7 +47,13 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/secondhand',
-      builder: (context, state) => const SecondhandMarketplacePage(),
+      builder: (context, state) {
+        final extra = state.extra;
+        return SecondhandMarketplacePage(
+          returnToStudentArea:
+              extra is Map && extra['returnToStudentArea'] == true,
+        );
+      },
     ),
     GoRoute(
       path: '/card-design-edit',
