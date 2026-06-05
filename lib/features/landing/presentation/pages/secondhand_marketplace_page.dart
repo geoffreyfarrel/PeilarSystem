@@ -188,9 +188,9 @@ class _SecondhandMarketplacePageState extends State<SecondhandMarketplacePage> {
               currentTab: _tab,
               text: t,
               language: _language,
-              onBackToStudentArea: widget.returnToStudentArea
+              onBack: widget.returnToStudentArea
                   ? () => context.go('/feature/student-area')
-                  : null,
+                  : () => context.go('/'),
               onTabSelected: _handleTabPress,
               onLanguageSelected: (language) =>
                   setState(() => _language = language),
@@ -220,7 +220,7 @@ class _MarketHeader extends StatelessWidget {
   final _MarketTab currentTab;
   final String Function(String key) text;
   final _MarketLanguage language;
-  final VoidCallback? onBackToStudentArea;
+  final VoidCallback onBack;
   final ValueChanged<_MarketTab> onTabSelected;
   final ValueChanged<_MarketLanguage> onLanguageSelected;
 
@@ -229,7 +229,7 @@ class _MarketHeader extends StatelessWidget {
     required this.currentTab,
     required this.text,
     required this.language,
-    this.onBackToStudentArea,
+    required this.onBack,
     required this.onTabSelected,
     required this.onLanguageSelected,
   });
@@ -257,29 +257,19 @@ class _MarketHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          if (onBackToStudentArea == null)
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: _MarketColors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.menu_book_rounded,
-                color: _MarketColors.primary,
-                size: 22,
-              ),
-            )
-          else
-            IconButton(
-              onPressed: onBackToStudentArea,
+          SizedBox(
+            width: 38,
+            height: 38,
+            child: IconButton(
+              onPressed: onBack,
+              padding: EdgeInsets.zero,
               icon: const Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: _MarketColors.white,
                 size: 22,
               ),
             ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

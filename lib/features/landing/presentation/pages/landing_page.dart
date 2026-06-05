@@ -26,6 +26,11 @@ class LandingPage extends ConsumerWidget {
     required IconData icon,
     bool studentOnly = false,
   }) {
+    if (id == 'travel-hub') {
+      context.go('/ai-itinerary');
+      return;
+    }
+
     context.go(
       '/feature/$id',
       extra: {
@@ -372,7 +377,7 @@ class _PromoCard extends StatelessWidget {
               ),
               Positioned(
                 left: 24,
-                bottom: 18,
+                bottom: 10,
                 child: Text(
                   largeText,
                   style: const TextStyle(color: Color(0xFFC6006E), fontSize: 48, fontWeight: FontWeight.w900, height: 0.9),

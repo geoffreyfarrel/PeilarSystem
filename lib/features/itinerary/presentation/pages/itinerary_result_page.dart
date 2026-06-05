@@ -466,7 +466,7 @@ class _StopCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _StopThumbnail(index: index),
+          _StopThumbnail(stop: stop, index: index),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -558,9 +558,93 @@ class _StopCard extends StatelessWidget {
 }
 
 class _StopThumbnail extends StatelessWidget {
+  final ItineraryStop stop;
   final int index;
 
-  const _StopThumbnail({required this.index});
+  const _StopThumbnail({required this.stop, required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrls = ItineraryImageResolver.urlsFor(
+      place: stop.place,
+      activity: stop.activity,
+      primaryUrl: stop.imageUrl,
+    );
+    if (imageUrls.isEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: SizedBox(
+          width: 112,
+          height: 112,
+          child: _FallbackScene(index: index),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        width: 112,
+        height: 112,
+        color: const Color(0xFFF1F1F1),
+        child: _NetworkStopImage(urls: imageUrls, fallbackIndex: index),
+      ),
+    );
+  }
+}
+
+class _NetworkStopImage extends StatefulWidget {
+  final List<String> urls;
+  final int fallbackIndex;
+
+  const _NetworkStopImage({required this.urls, required this.fallbackIndex});
+
+  @override
+  State<_NetworkStopImage> createState() => _NetworkStopImageState();
+}
+
+class _NetworkStopImageState extends State<_NetworkStopImage> {
+  int _urlIndex = 0;
+
+  @override
+  void didUpdateWidget(covariant _NetworkStopImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.urls.join('|') != widget.urls.join('|')) {
+      _urlIndex = 0;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_urlIndex >= widget.urls.length) {
+      return _FallbackScene(index: widget.fallbackIndex);
+    }
+
+    return Image.network(
+      widget.urls[_urlIndex],
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _urlIndex < widget.urls.length) {
+            setState(() => _urlIndex += 1);
+          }
+        });
+        return const Center(
+          child: SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _FallbackScene extends StatelessWidget {
+  final int index;
+
+  const _FallbackScene({required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -571,22 +655,17 @@ class _StopThumbnail extends StatelessWidget {
     ];
     final item = colors[index % colors.length];
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        width: 112,
-        height: 112,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [item.$2, Colors.white],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [item.$2, Colors.white],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: CustomPaint(
-          painter: _ScenePainter(color: item.$1, index: index),
-          child: Center(child: Icon(item.$3, color: item.$1, size: 56)),
-        ),
+      ),
+      child: CustomPaint(
+        painter: _ScenePainter(color: item.$1, index: index),
+        child: Center(child: Icon(item.$3, color: item.$1, size: 56)),
       ),
     );
   }

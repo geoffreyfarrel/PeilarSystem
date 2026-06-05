@@ -95,6 +95,24 @@ class _FeatureDetailPageState extends ConsumerState<FeatureDetailPage> {
       );
     }
 
+    if (widget.featureId == 'split-bill') {
+      return _ReferenceFeatureScaffold(
+        title: text['splitBill'] ?? 'Split Bill',
+        boundLabel: 'EasyCard',
+        onBack: () => context.go(backLocation),
+        child: _SplitBillReferencePage(language: language),
+      );
+    }
+
+    if (widget.featureId == 'forum') {
+      return _ReferenceFeatureScaffold(
+        title: text['forum'] ?? 'Student Forum',
+        boundLabel: 'Student EasyCard',
+        onBack: () => context.go(backLocation),
+        child: _StudentForumReferencePage(language: language),
+      );
+    }
+
     if (widget.featureId == 'student-area') {
       return _StudentAreaReferenceScaffold(
         title: text['studentArea'] ?? 'Student Area',
@@ -115,7 +133,7 @@ class _FeatureDetailPageState extends ConsumerState<FeatureDetailPage> {
         title: title,
         centerTitle: true,
         trailing: const LanguageToggle(),
-        onBack: () => context.go('/'),
+        onBack: () => context.go(backLocation),
         child: _StudentMarketAhhPage(language: language),
       );
     }
@@ -3513,6 +3531,1080 @@ class _PinkCta extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           const Icon(Icons.chevron_right, color: Colors.white, size: 24),
+        ],
+      ),
+    );
+  }
+}
+
+class _SplitBillReferencePage extends StatefulWidget {
+  final AppLanguage language;
+
+  const _SplitBillReferencePage({required this.language});
+
+  @override
+  State<_SplitBillReferencePage> createState() =>
+      _SplitBillReferencePageState();
+}
+
+class _SplitBillReferencePageState extends State<_SplitBillReferencePage> {
+  static const Color pink = Color(0xFFE52D88);
+  static const Color blue = Color(0xFF4EA3E7);
+  static const Color green = Color(0xFF53A657);
+  static const Color yellow = Color(0xFFFFED69);
+  static const Color dark = Color(0xFF282828);
+
+  final Map<String, double> shares = {
+    'Ming': 0.32,
+    'Yu': 0.24,
+    'Chen': 0.21,
+    'Lin': 0.23,
+  };
+
+  bool get isZh => widget.language == AppLanguage.zh;
+
+  @override
+  Widget build(BuildContext context) {
+    final total = 3927.73;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+      children: [
+        _SplitTotalCard(isZh: isZh, total: total, selectedCount: shares.length),
+        const SizedBox(height: 18),
+        _SplitSectionHeader(
+          icon: Icons.people_alt_outlined,
+          title: isZh ? '附近好友' : 'Nearby Friends',
+          action: isZh ? '查看全部' : 'See all',
+        ),
+        const SizedBox(height: 10),
+        _NearbyFriendRow(isZh: isZh),
+        const SizedBox(height: 20),
+        _SplitSectionHeader(
+          icon: Icons.receipt_long_outlined,
+          title: isZh ? '今日帳單' : 'Today Activity',
+          action: isZh ? '明細' : 'Details',
+        ),
+        const SizedBox(height: 10),
+        _SplitRestaurantCard(isZh: isZh),
+        const SizedBox(height: 18),
+        _SplitSectionHeader(
+          icon: Icons.tune,
+          title: isZh ? '誰要分帳' : 'Who is sharing the bill',
+          action: isZh ? '新增' : 'Add',
+        ),
+        const SizedBox(height: 10),
+        ...shares.entries.map((entry) {
+          return _ShareSliderRow(
+            name: entry.key,
+            percent: entry.value,
+            total: total,
+            onChanged: (value) => setState(() => shares[entry.key] = value),
+          );
+        }),
+        const SizedBox(height: 18),
+        _SplitSummaryCard(isZh: isZh, total: total, shares: shares),
+        const SizedBox(height: 18),
+        _SplitPrimaryButton(label: isZh ? '送出分帳邀請' : 'Send Split Request'),
+      ],
+    );
+  }
+}
+
+class _SplitTotalCard extends StatelessWidget {
+  final bool isZh;
+  final double total;
+  final int selectedCount;
+
+  const _SplitTotalCard({
+    required this.isZh,
+    required this.total,
+    required this.selectedCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFFE6E6E6)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .05),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isZh ? '總金額' : 'Total Bill',
+                  style: const TextStyle(
+                    color: Color(0xFF777777),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'NT\$${total.toStringAsFixed(0)}',
+                  style: const TextStyle(
+                    color: _SplitBillReferencePageState.dark,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    _MiniAvatar(color: _SplitBillReferencePageState.pink),
+                    _MiniAvatar(color: _SplitBillReferencePageState.blue),
+                    _MiniAvatar(color: _SplitBillReferencePageState.green),
+                    Container(
+                      width: 28,
+                      height: 28,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _SplitBillReferencePageState.yellow,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        '+$selectedCount',
+                        style: const TextStyle(
+                          color: _SplitBillReferencePageState.dark,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 104,
+            height: 104,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F8F8),
+              borderRadius: BorderRadius.circular(52),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const Icon(
+                  Icons.restaurant_rounded,
+                  color: _SplitBillReferencePageState.dark,
+                  size: 44,
+                ),
+                Positioned(
+                  right: 10,
+                  bottom: 14,
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: const BoxDecoration(
+                      color: _SplitBillReferencePageState.pink,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.add, color: Colors.white, size: 18),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniAvatar extends StatelessWidget {
+  final Color color;
+
+  const _MiniAvatar({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 28,
+      height: 28,
+      margin: const EdgeInsets.only(right: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .22),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white, width: 2),
+      ),
+      child: Icon(Icons.person, color: color, size: 16),
+    );
+  }
+}
+
+class _SplitSectionHeader extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String action;
+
+  const _SplitSectionHeader({
+    required this.icon,
+    required this.title,
+    required this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: _SplitBillReferencePageState.dark, size: 22),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+          ),
+        ),
+        Text(
+          action,
+          style: const TextStyle(
+            color: _SplitBillReferencePageState.pink,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NearbyFriendRow extends StatelessWidget {
+  final bool isZh;
+
+  const _NearbyFriendRow({required this.isZh});
+
+  @override
+  Widget build(BuildContext context) {
+    final friends = [
+      ('Justin', _SplitBillReferencePageState.blue),
+      ('Druid', _SplitBillReferencePageState.yellow),
+      ('Fleece', _SplitBillReferencePageState.green),
+      ('Ursula', _SplitBillReferencePageState.pink),
+    ];
+    return SizedBox(
+      height: 108,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: friends.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          final friend = friends[index];
+          return Container(
+            width: 92,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: friend.$2.withValues(alpha: .12),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: friend.$2.withValues(alpha: .35)),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _MiniAvatar(color: friend.$2),
+                const SizedBox(height: 8),
+                Text(
+                  friend.$1,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Icon(Icons.add_circle_outline, color: friend.$2, size: 18),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _StudentForumReferencePage extends StatefulWidget {
+  final AppLanguage language;
+
+  const _StudentForumReferencePage({required this.language});
+
+  @override
+  State<_StudentForumReferencePage> createState() =>
+      _StudentForumReferencePageState();
+}
+
+class _StudentForumReferencePageState
+    extends State<_StudentForumReferencePage> {
+  static const Color pink = Color(0xFFE52D88);
+  static const Color blue = Color(0xFF4EA3E7);
+  static const Color green = Color(0xFF53A657);
+  static const Color yellow = Color(0xFFFFED69);
+
+  bool allowDm = true;
+  bool showOnWall = true;
+  int selectedBoard = 1;
+
+  bool get isZh => widget.language == AppLanguage.zh;
+
+  @override
+  Widget build(BuildContext context) {
+    final boards = [
+      _ForumBoardSpec('NTPU', isZh ? '北大' : 'NTPU', blue, 128),
+      _ForumBoardSpec('Food', isZh ? '美食' : 'Food', yellow, 86),
+      _ForumBoardSpec('Chat', isZh ? '閒聊' : 'Chat', green, 214),
+      _ForumBoardSpec('Mood', isZh ? '心情' : 'Mood', pink, 77),
+    ];
+    final topics = isZh
+        ? ['#北大生活', '#三峽美食', '#選課', '#租屋', '#實習']
+        : ['#NTPU life', '#Sanxia food', '#Courses', '#Housing', '#Internship'];
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 26),
+      children: [
+        _ForumSearchBar(
+          hint: isZh ? '搜尋看板、文章或話題' : 'Search boards, posts, topics',
+        ),
+        const SizedBox(height: 18),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                isZh ? '搜尋看板' : 'Browse Boards',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+            _ForumIconButton(icon: Icons.edit_rounded, color: pink),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ...List.generate(boards.length, (index) {
+          final board = boards[index];
+          return _ForumBoardTile(
+            board: board,
+            enabled: index < 3,
+            selected: selectedBoard == index,
+            onTap: () => setState(() => selectedBoard = index),
+            isZh: isZh,
+          );
+        }),
+        const SizedBox(height: 18),
+        _ForumComposerCard(
+          isZh: isZh,
+          allowDm: allowDm,
+          showOnWall: showOnWall,
+          onDmChanged: (value) => setState(() => allowDm = value),
+          onWallChanged: (value) => setState(() => showOnWall = value),
+        ),
+        const SizedBox(height: 18),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: topics
+              .map((topic) => _ForumTopicChip(label: topic))
+              .toList(),
+        ),
+        const SizedBox(height: 18),
+        _ForumPostCard(
+          board: isZh ? '北大' : 'NTPU',
+          title: isZh
+              ? '有人今天也在三峽老街讀書嗎？'
+              : 'Anyone studying near Sanxia Old Street today?',
+          body: isZh
+              ? '想找安靜的咖啡廳，悠遊卡有學生優惠更好。'
+              : 'Looking for a quiet cafe, preferably with an EasyCard student deal.',
+          color: blue,
+          likes: 328,
+        ),
+        _ForumPostCard(
+          board: isZh ? '美食' : 'Food',
+          title: isZh ? '北大附近晚餐推薦' : 'Dinner spots near NTPU',
+          body: isZh
+              ? '整理幾間平價店，適合分帳和用悠遊付。'
+              : 'A few affordable places that work well for split bill and EasyCard Pay.',
+          color: green,
+          likes: 146,
+        ),
+      ],
+    );
+  }
+}
+
+class _ForumSearchBar extends StatelessWidget {
+  final String hint;
+
+  const _ForumSearchBar({required this.hint});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF6F6F6),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE2E2E2)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.search_rounded, color: Color(0xFF777777)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              hint,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xFF888888),
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ForumIconButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+
+  const _ForumIconButton({required this.icon, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(icon, color: Colors.white, size: 22),
+    );
+  }
+}
+
+class _ForumBoardSpec {
+  final String iconText;
+  final String name;
+  final Color color;
+  final int posts;
+
+  const _ForumBoardSpec(this.iconText, this.name, this.color, this.posts);
+}
+
+class _ForumBoardTile extends StatelessWidget {
+  final _ForumBoardSpec board;
+  final bool enabled;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool isZh;
+
+  const _ForumBoardTile({
+    required this.board,
+    required this.enabled,
+    required this.selected,
+    required this.onTap,
+    required this.isZh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: selected ? board.color.withValues(alpha: .08) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected ? board.color : const Color(0xFFE4E4E4),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: board.color.withValues(alpha: .18),
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                board.iconText.substring(0, 1),
+                style: TextStyle(
+                  color: board.color,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          board.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                      if (enabled) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF9B9B9B),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            isZh ? '開放私訊' : 'DM open',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isZh
+                        ? '${board.posts} 篇文章 · 學生限定'
+                        : '${board.posts} posts · verified students',
+                    style: const TextStyle(
+                      color: Color(0xFF777777),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              selected ? Icons.check_circle : Icons.chevron_right_rounded,
+              color: selected ? board.color : const Color(0xFFAAAAAA),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ForumComposerCard extends StatelessWidget {
+  final bool isZh;
+  final bool allowDm;
+  final bool showOnWall;
+  final ValueChanged<bool> onDmChanged;
+  final ValueChanged<bool> onWallChanged;
+
+  const _ForumComposerCard({
+    required this.isZh,
+    required this.allowDm,
+    required this.showOnWall,
+    required this.onDmChanged,
+    required this.onWallChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE4E4E4)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .04),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  isZh ? '發文設定' : 'Post Settings',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: _StudentForumReferencePageState.blue,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  isZh ? '發布' : 'Publish',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _ForumSwitchRow(
+            title: isZh ? '接受私訊' : 'Allow direct messages',
+            subtitle: isZh ? '綁定學生身份文章限定' : 'Student identity verified posts',
+            value: allowDm,
+            onChanged: onDmChanged,
+            color: _StudentForumReferencePageState.blue,
+          ),
+          _ForumSwitchRow(
+            title: isZh ? '顯示於個人牆' : 'Show on profile wall',
+            subtitle: isZh ? '開啟後仍可在個人牆隱藏文章' : 'You can still hide it later',
+            value: showOnWall,
+            onChanged: onWallChanged,
+            color: _StudentForumReferencePageState.green,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ForumSwitchRow extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final Color color;
+
+  const _ForumSwitchRow({
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Color(0xFF777777),
+                    fontSize: 12,
+                    height: 1.25,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeThumbColor: Colors.white,
+            activeTrackColor: color,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ForumTopicChip extends StatelessWidget {
+  final String label;
+
+  const _ForumTopicChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F7F7),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: const Color(0xFFE4E4E4)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+      ),
+    );
+  }
+}
+
+class _ForumPostCard extends StatelessWidget {
+  final String board;
+  final String title;
+  final String body;
+  final Color color;
+  final int likes;
+
+  const _ForumPostCard({
+    required this.board,
+    required this.title,
+    required this.body,
+    required this.color,
+    required this.likes,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE4E4E4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: .16),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.school_rounded, color: color, size: 16),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                board,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const Spacer(),
+              const Icon(Icons.more_horiz, color: Color(0xFF777777)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            body,
+            style: const TextStyle(
+              color: Color(0xFF555555),
+              fontSize: 14,
+              height: 1.35,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(Icons.favorite_border, color: color, size: 19),
+              const SizedBox(width: 5),
+              Text(
+                '$likes',
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(width: 18),
+              const Icon(
+                Icons.chat_bubble_outline_rounded,
+                color: Color(0xFF777777),
+                size: 18,
+              ),
+              const SizedBox(width: 5),
+              const Text('24', style: TextStyle(fontWeight: FontWeight.w900)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SplitRestaurantCard extends StatelessWidget {
+  final bool isZh;
+
+  const _SplitRestaurantCard({required this.isZh});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE6E6E6)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 82,
+            height: 82,
+            decoration: BoxDecoration(
+              color: _SplitBillReferencePageState.yellow.withValues(alpha: .32),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: const Icon(
+              Icons.ramen_dining_rounded,
+              color: _SplitBillReferencePageState.pink,
+              size: 42,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isZh ? '三峽老街聚餐' : 'Sanxia Dinner',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isZh ? '金牛角、飲料與小吃分帳' : 'Pastry, drinks, and snacks',
+                  style: const TextStyle(color: Color(0xFF666666)),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'NT\$3,927.73',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right, color: Color(0xFF999999)),
+        ],
+      ),
+    );
+  }
+}
+
+class _ShareSliderRow extends StatelessWidget {
+  final String name;
+  final double percent;
+  final double total;
+  final ValueChanged<double> onChanged;
+
+  const _ShareSliderRow({
+    required this.name,
+    required this.percent,
+    required this.total,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final amount = total * percent;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.fromLTRB(12, 12, 14, 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE6E6E6)),
+      ),
+      child: Row(
+        children: [
+          _MiniAvatar(color: _SplitBillReferencePageState.blue),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'NT\$${amount.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 4,
+                    thumbShape: const RoundSliderThumbShape(
+                      enabledThumbRadius: 7,
+                    ),
+                    activeTrackColor: _SplitBillReferencePageState.pink,
+                    inactiveTrackColor: const Color(0xFFEDEDED),
+                    thumbColor: _SplitBillReferencePageState.yellow,
+                  ),
+                  child: Slider(
+                    min: .05,
+                    max: .65,
+                    value: percent,
+                    onChanged: onChanged,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SplitSummaryCard extends StatelessWidget {
+  final bool isZh;
+  final double total;
+  final Map<String, double> shares;
+
+  const _SplitSummaryCard({
+    required this.isZh,
+    required this.total,
+    required this.shares,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final average = total / shares.length;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FBFF),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: _SplitBillReferencePageState.blue.withValues(alpha: .35),
+        ),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.credit_card_rounded,
+            color: _SplitBillReferencePageState.blue,
+            size: 34,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              isZh
+                  ? '每人平均約 NT\$${average.toStringAsFixed(0)}，可用悠遊付送出請款。'
+                  : 'Average NT\$${average.toStringAsFixed(0)} each. Send requests with EasyCard Pay.',
+              style: const TextStyle(
+                color: _SplitBillReferencePageState.dark,
+                fontSize: 14,
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SplitPrimaryButton extends StatelessWidget {
+  final String label;
+
+  const _SplitPrimaryButton({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 56,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: _SplitBillReferencePageState.pink,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: _SplitBillReferencePageState.pink.withValues(alpha: .26),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.send_rounded, color: Colors.white, size: 21),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
         ],
       ),
     );
