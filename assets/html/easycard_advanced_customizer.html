@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>EasyCard Advanced Customizer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;min-width:0;overflow-x:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",Arial,sans-serif;background:#f4f4f4;color:#17191f}
+button,input{font:inherit}
+.app{width:100%;min-height:100vh;background:#f4f4f4}
+.topbar{height:62px;background:#0a0a0a;color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between}
+.top-left{display:flex;align-items:center;gap:10px}
+.back,.info{border:0;background:transparent;color:#fff;cursor:pointer;display:grid;place-items:center}
+.back{font-size:38px;line-height:1;width:34px;height:38px}
+.info{width:34px;height:34px;border:2px solid rgba(255,255,255,.8);border-radius:50%;font-size:20px;font-weight:700;color:#ddd}
+.title{font-size:18px;font-weight:800;letter-spacing:-.2px}
+.step{font-size:12px;color:#999;margin-top:1px;font-weight:700}
+.stage{background:#1c1c1c;padding:18px 12px 22px;width:100%}
+.pack{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 15px;width:fit-content;margin:0 auto 16px;color:#fff;font-size:14px;font-weight:800}
+.pack svg{width:20px;height:20px;color:#4EA3E7}.pack .chev{color:#aaa}
+.card-outer{position:relative;aspect-ratio:1.586;border-radius:16px;filter:drop-shadow(0 12px 26px rgba(0,0,0,.5));width:100%;max-width:none;margin:0}
+.card-inner{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:#cde;box-shadow:inset 0 0 0 1px rgba(255,255,255,.26);transition:border-radius .18s}
+.card-inner.edge-rounded{clip-path:none;border-radius:16px}
+.card-inner.edge-side,.card-inner.edge-scoop{border-radius:16px;-webkit-mask-image:linear-gradient(#000,#000);mask-image:linear-gradient(#000,#000)}
+.card-inner.edge-side{-webkit-mask-image:radial-gradient(circle 28px at 0 50%,transparent 0 25px,#000 26px);mask-image:radial-gradient(circle 28px at 0 50%,transparent 0 25px,#000 26px)}
+.card-inner.edge-scoop{-webkit-mask-image:radial-gradient(circle 36px at 0 0,transparent 0 33px,#000 34px);mask-image:radial-gradient(circle 36px at 0 0,transparent 0 33px,#000 34px)}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.content{position:absolute;inset:0;z-index:4;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.55)}
+.card-top,.card-bottom{display:flex;justify-content:space-between;align-items:flex-start}.card-top{justify-content:flex-end}
+.identity{margin-bottom:7px}.name{font-size:12px;font-weight:900;letter-spacing:.35px}.sub{font-size:8px;font-weight:800;color:rgba(255,255,255,.72);margin-top:2px}.logo{width:54px;height:auto;filter:drop-shadow(0 1px 3px rgba(0,0,0,.45))}
+.num{font-size:10px;letter-spacing:2px;font-weight:800;color:rgba(255,255,255,.72)}.bal{text-align:right}.bal-label{font-size:8px;color:rgba(255,255,255,.68);text-transform:uppercase;font-weight:800}.bal-amt{font-size:14px;font-weight:950}
+.braille{position:absolute;z-index:6;left:16px;top:42px;display:flex;flex-direction:column;gap:4px;pointer-events:none}.cell{display:grid;grid-template-columns:repeat(2,5px);grid-template-rows:repeat(3,5px);gap:2px}.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.88);box-shadow:0 0 0 .5px rgba(0,0,0,.25)}.dot.off{background:rgba(255,255,255,.18)}
+.stickers{position:absolute;inset:0;z-index:7;overflow:hidden}.sticker{position:absolute;transform:translate(-50%,-50%) rotate(var(--rot));touch-action:none;cursor:grab;color:#14396D;width:var(--size);height:var(--size)}.sticker:active{cursor:grabbing}.sticker svg,.sticker img{width:100%;height:100%;display:block;filter:drop-shadow(0 1px 1px rgba(255,255,255,.55));object-fit:contain}.sticker svg{fill:currentColor}
+.sticker.selected{outline:2px dashed rgba(78,163,231,.85);outline-offset:4px;border-radius:5px}.handle{display:none;position:absolute;width:24px;height:24px;border-radius:50%;background:#fff;align-items:center;justify-content:center;font-weight:900;font-size:14px}.selected .handle{display:flex}.close{right:-16px;top:-16px;color:#246fec;border:2px solid #246fec}.resize{right:-16px;bottom:-16px;color:#E52D88;border:2px solid #E52D88}
+.tabs{height:48px;display:flex;background:#fff;border-bottom:1px solid #dedede;overflow-x:auto}.tab{min-width:86px;flex:1;border:0;background:#fff;color:#666;font-size:14px;font-weight:800;border-bottom:3px solid transparent}.tab.active{color:#246fec;border-bottom-color:#246fec}
+.panel{display:none;background:#fff;padding:14px 16px 90px}.panel.active{display:block}.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}.chip{border:1px solid #dedede;background:#f7f7f7;color:#666;padding:7px 15px;border-radius:999px;font-size:13px;font-weight:800;white-space:nowrap}.chip.on{background:#0a0a0a;color:#fff;border-color:#0a0a0a}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.tile{aspect-ratio:1;border:1px solid #dedede;background:#fff;border-radius:12px;display:grid;place-items:center;color:#14396D}.tile svg{width:42%;height:42%;fill:currentColor}.tile img{width:70%;height:70%;object-fit:contain}.tile:active{transform:scale(.9)}
+.label{margin:15px 0 8px;font-size:11px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:#777}.slider-row{display:flex;align-items:center;gap:10px;margin-bottom:11px}.slider-row label{width:48px;color:#777;font-size:12px;font-weight:800}.slider-row input[type=range]{flex:1}.val{width:38px;text-align:right;font-size:12px;font-weight:900}
+.palette{display:flex;align-items:center;gap:8px;margin:10px 0 14px}.sw{width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #d8d8d8}.sw.sel{box-shadow:0 0 0 3px #111}input[type=color]{width:36px;height:32px;border:1px solid #ddd;border-radius:8px;background:#fff;padding:2px}
+.row{display:flex;gap:8px}.outline,.primary{height:42px;border-radius:12px;font-size:14px;font-weight:900}.outline{flex:1;border:1.5px solid #E52D88;background:#fff;color:#E52D88}.primary{border:0;background:#E52D88;color:#fff}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.theme{aspect-ratio:1.586;border-radius:9px;overflow:hidden;border:2px solid transparent;position:relative;background:#ddd}.theme.sel{border-color:#E52D88}.theme div{position:absolute;inset:auto 0 0;padding:14px 4px 5px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;text-align:center;font-size:9px;font-weight:900}.theme canvas,.theme img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.option-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.option{border:1.5px solid #dedede;background:#f8f8f8;border-radius:12px;padding:13px 9px;text-align:center;font-size:13px;font-weight:900}.option.sel{border-color:#246fec;background:#eaf4ff;color:#246fec}.pos{display:flex;flex-wrap:wrap;gap:8px}.pos button{border:1.5px solid #dedede;background:#f8f8f8;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:900}.pos button.sel{border-color:#246fec;background:#eaf4ff}
+.toggle{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #ececec}.toggle b{font-size:14px}.toggle p{font-size:12px;color:#777;margin-top:2px}.switch{width:45px;height:25px;border-radius:999px;border:0;background:#ddd;padding:3px;flex-shrink:0}.switch span{display:block;width:19px;height:19px;border-radius:50%;background:#fff;transition:transform .2s}.switch.on{background:#246fec}.switch.on span{transform:translateX(20px)}
+.footer{position:fixed;left:0;right:0;bottom:0;width:100%;background:#fff;border-top:1px solid #dedede;padding:12px 16px calc(12px + env(safe-area-inset-bottom));display:flex;gap:10px}.footer .outline{height:48px}.footer .primary{flex:2;height:48px}
+.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(10px);opacity:0;background:#111;color:#fff;border-radius:999px;padding:9px 18px;font-size:12px;font-weight:800;transition:.25s;z-index:99}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.preview-page{display:none;min-height:100vh;background:#f4f4f4;padding-bottom:24px}.preview-body{padding:18px 12px}.preview-card{position:relative;aspect-ratio:1.586;border-radius:18px;overflow:hidden;box-shadow:0 14px 28px rgba(0,0,0,.18);background:#cde;margin:0 0 18px;width:100%;max-width:none}.preview-card.edge-side{-webkit-mask-image:radial-gradient(circle 28px at 0 50%,transparent 0 25px,#000 26px);mask-image:radial-gradient(circle 28px at 0 50%,transparent 0 25px,#000 26px)}.preview-card.edge-scoop{-webkit-mask-image:radial-gradient(circle 36px at 0 0,transparent 0 33px,#000 34px);mask-image:radial-gradient(circle 36px at 0 0,transparent 0 33px,#000 34px)}.preview-card canvas{position:absolute;inset:0}.preview-stickers{position:absolute;inset:0}.preview-symbol{position:absolute;transform:translate(-50%,-50%) rotate(var(--rot));width:var(--size);height:var(--size);color:#14396D}.preview-symbol svg,.preview-symbol img{width:100%;height:100%;object-fit:contain;fill:currentColor}.preview-actions{display:grid;gap:10px}.preview-actions button{height:50px;border-radius:14px;font-size:15px;font-weight:900}.preview-actions .light{border:1.5px solid #dedede;background:#fff;color:#222}.preview-note{background:#fff;border:1px solid #dedede;border-radius:14px;padding:14px;margin:16px 0;font-size:13px;color:#555;line-height:1.4}body.preview-mode .app,body.preview-mode .footer{display:none}body.preview-mode .preview-page{display:block}
+@media print{.topbar,.preview-actions,.preview-note{display:none}.preview-page{display:block;background:#fff}.preview-card{box-shadow:none;width:86mm;margin:20mm auto}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="top-left">
+      <button class="back" aria-label="Back" onclick="goBack()">&lt;</button>
+      <div><div class="title" data-i18n="customizeCard">Customize Card</div></div>
+    </div>
+    <button class="info" onclick="toast(tx('dragHelp'))">i</button>
+  </div>
+
+  <section class="stage">
+    <div class="pack"><span id="bankIcon"></span><span>School Spirit x Sanxia Pack</span><span class="chev">v</span></div>
+    <div class="card-outer">
+      <div class="card-inner edge-rounded" id="cardInner">
+        <canvas id="bg"></canvas>
+        <div class="braille" id="braille"></div>
+        <div class="stickers" id="stickers"></div>
+        <div class="content">
+          <div class="card-top"><img class="logo" data-asset-src="images/easycardlogo.png" alt="EasyCard"></div>
+          <div class="card-bottom"><div><div class="identity"><div class="name">ALEX CHEN</div><div class="sub">Student EasyCard</div></div><div class="num">1234 5678 90</div></div><div class="bal"><div class="bal-label">Balance</div><div class="bal-amt">NT$ 1,250</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <button class="tab active" data-panel="stickersPanel" data-i18n="stickers">Stickers</button>
+    <button class="tab" data-panel="themesPanel" data-i18n="themes">Themes</button>
+    <button class="tab" data-panel="notchesPanel" data-i18n="notches">Notches</button>
+    <button class="tab" data-panel="braillePanel" data-i18n="braille">Braille</button>
+    <button class="tab" data-panel="accessPanel" data-i18n="access">Access</button>
+  </nav>
+
+  <section class="panel active" id="stickersPanel">
+    <div class="chips" id="stickerChips"></div>
+    <div class="grid" id="stickerGrid"></div>
+    <div class="label" data-i18n="selectedSymbol">Selected symbol</div>
+    <div class="slider-row"><label data-i18n="size">Size</label><input id="size" type="range" min="20" max="84" value="46"><span class="val" id="sizeVal">46</span></div>
+    <div class="slider-row"><label data-i18n="rotate">Rotate</label><input id="rotate" type="range" min="-180" max="180" value="0"><span class="val" id="rotateVal">0 deg</span></div>
+    <div class="label" data-i18n="symbolColor">Symbol color</div>
+    <div class="palette" id="palette"></div>
+    <div class="row"><button class="outline" onclick="duplicateSticker()" data-i18n="duplicate">Duplicate</button><button class="outline" style="border-color:#d64545;color:#d64545" onclick="removeSelected()" data-i18n="remove">Remove</button></div>
+  </section>
+
+  <section class="panel" id="themesPanel">
+    <div class="chips" id="themeChips"></div>
+    <div class="toggle"><div><b data-i18n="greenBand">Green band</b><p data-i18n="greenBandDesc">Change the lower wave color or hide it.</p></div><button class="switch on" id="bandSwitch" onclick="toggleBand(this)"><span></span></button></div>
+    <div class="palette" id="bandPalette"></div>
+    <div class="theme-grid" id="themeGrid"></div>
+  </section>
+
+  <section class="panel" id="notchesPanel">
+    <div class="label" data-i18n="cardEdgeStyle">Card edge style</div>
+    <div class="option-grid" id="notchGrid"></div>
+    <div class="label" data-i18n="leftEdgeOnly">Left edge only</div>
+    <div class="pos" id="notchPos"></div>
+  </section>
+
+  <section class="panel" id="braillePanel">
+    <div class="label" data-i18n="cardType">Card type</div>
+    <div class="option-grid" id="brailleTypes"></div>
+    <div class="label" data-i18n="braillePosition">Braille position</div>
+    <div class="pos" id="braillePos"></div>
+    <div class="toggle"><div><b data-i18n="showBraille">Show braille preview</b><p data-i18n="showBrailleDesc">Visible on card canvas</p></div><button class="switch on" onclick="toggleBraille(this)"><span></span></button></div>
+  </section>
+
+  <section class="panel" id="accessPanel">
+    <div class="label" data-i18n="accessibilitySettings">Accessibility settings</div>
+    <div class="toggle"><div><b data-i18n="highContrast">High contrast mode</b><p data-i18n="highContrastDesc">Increase text visibility</p></div><button class="switch" onclick="toggleSwitch(this)"><span></span></button></div>
+    <div class="toggle"><div><b data-i18n="largeCardNumber">Large card number</b><p data-i18n="largeCardNumberDesc">Bigger font for card digits</p></div><button class="switch" onclick="toggleSwitch(this)"><span></span></button></div>
+    <div class="toggle"><div><b data-i18n="tactileEdge">Tactile edge markers</b><p data-i18n="tactileEdgeDesc">Physical notch on card edge</p></div><button class="switch on" onclick="toggleSwitch(this)"><span></span></button></div>
+    <div class="toggle"><div><b data-i18n="screenReader">Screen reader label</b><p data-i18n="screenReaderDesc">Spoken card type when tapped</p></div><button class="switch on" onclick="toggleSwitch(this)"><span></span></button></div>
+  </section>
+</div>
+
+<section class="preview-page" id="previewPage">
+  <div class="topbar">
+    <div class="top-left">
+      <button class="back" aria-label="Return to design" onclick="returnToDesign()">&lt;</button>
+      <div><div class="title" data-i18n="previewCard">Preview Card</div><div class="step" data-i18n="savedDesign">Saved design</div></div>
+    </div>
+    <button class="info" onclick="printCard()">P</button>
+  </div>
+  <div class="preview-body">
+    <div class="preview-card" id="previewCard">
+      <canvas id="previewBg"></canvas>
+      <div class="braille" id="previewBraille"></div>
+      <div class="preview-stickers" id="previewStickers"></div>
+      <div class="content">
+        <div class="card-top"><img class="logo" data-asset-src="images/easycardlogo.png" alt="EasyCard"></div>
+        <div class="card-bottom"><div><div class="identity"><div class="name">ALEX CHEN</div><div class="sub">Student EasyCard</div></div><div class="num">1234 5678 90</div></div><div class="bal"><div class="bal-label">Balance</div><div class="bal-amt">NT$ 1,250</div></div></div>
+      </div>
+    </div>
+    <div class="preview-note" data-i18n="previewNote">Preview your saved card before printing or returning to the editor.</div>
+    <div class="preview-actions">
+      <button class="primary" onclick="printCard()" data-i18n="printCard">Print Card</button>
+      <button class="light" onclick="renderPreview();toast(tx('previewRefreshed'))" data-i18n="previewCard">Preview Card</button>
+      <button class="light" onclick="returnToDesign()" data-i18n="returnToDesign">Return to Design</button>
+      <button class="outline" onclick="goBack()" data-i18n="goHome">Go Home</button>
+    </div>
+  </div>
+</section>
+
+<div class="footer"><button class="outline" onclick="resetAll()" data-i18n="reset">Reset</button><button class="primary" onclick="showPreview()" data-i18n="saveCard">Save Card -></button></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const C={pink:'#E52D88',blue:'#4EA3E7',green:'#53A657',yellow:'#FFED69',navy:'#14396D',gray:'#888'};
+const assetPath=p=>new URL(p,document.baseURI).href;
+const BEBE_SRC=assetPath('images/Bebe.png');
+const PEILAR_SRC=assetPath('images/Peilar.png');
+document.querySelectorAll('[data-asset-src]').forEach(el=>{el.src=assetPath(el.dataset.assetSrc)});
+const I18N={
+ en:{customizeCard:'Customize Card',stickers:'Stickers',themes:'Themes',notches:'Notches',braille:'Braille',access:'Access',selectedSymbol:'Selected symbol',size:'Size',rotate:'Rotate',symbolColor:'Symbol color',duplicate:'Duplicate',remove:'Remove',greenBand:'Green band',greenBandDesc:'Change the lower wave color or hide it.',cardEdgeStyle:'Card edge style',leftEdgeOnly:'Left edge only',cardType:'Card type',braillePosition:'Braille position',showBraille:'Show braille preview',showBrailleDesc:'Visible on card canvas',accessibilitySettings:'Accessibility settings',highContrast:'High contrast mode',highContrastDesc:'Increase text visibility',largeCardNumber:'Large card number',largeCardNumberDesc:'Bigger font for card digits',tactileEdge:'Tactile edge markers',tactileEdgeDesc:'Physical notch on card edge',screenReader:'Screen reader label',screenReaderDesc:'Spoken card type when tapped',previewCard:'Preview Card',savedDesign:'Saved design',previewNote:'Preview your saved card before printing or returning to the editor.',printCard:'Print Card',returnToDesign:'Return to Design',goHome:'Go Home',reset:'Reset',saveCard:'Save Card ->',dragHelp:'Drag symbols to move. Use handles to resize or remove.',previewRefreshed:'Preview refreshed',themeApplied:'Theme applied',symbolAdded:'Symbol added',resetComplete:'Reset complete',cardSaved:'Card saved',brailleType:'Braille type',braillePos:'Braille position',applied:'applied',All:'All',Mascot:'Mascot',Taiwan:'Taiwan',Nature:'Nature',Fun:'Fun',University:'University',Artist:'Artist',Cute:'Cute',Student:'Student',Disabled:'Disabled',EasyCard:'EasyCard',TopLeft:'Top-Left',TopRight:'Top-Right',BottomLeft:'Bottom-Left',BottomRight:'Bottom-Right',RoundedCorner:'Rounded Corner',RoundedSideNotch:'Rounded Side Notch',RoundedCornerScoop:'Rounded Corner Scoop',LeftEdgeOnly:'Left edge only',NTPUCampus:'NTPU Campus',SanxiaOldStreet:'Sanxia Old Street',Ximending:'Ximending',WulaiWaterfall:'Wulai Waterfall',YinggeCeramic:'Yingge Ceramic',IndigoDye:'Indigo Dye',CherryBlossom:'Cherry Blossom',RaoheNightMarket:'Raohe Night Market',Taipei101:'Taipei 101'},
+ zh:{customizeCard:'自訂卡片',stickers:'貼紙',themes:'主題',notches:'缺口',braille:'點字',access:'輔助',selectedSymbol:'已選符號',size:'大小',rotate:'旋轉',symbolColor:'符號顏色',duplicate:'複製',remove:'移除',greenBand:'綠色波浪',greenBandDesc:'變更卡片下方波浪顏色或隱藏。',cardEdgeStyle:'卡片邊緣樣式',leftEdgeOnly:'僅左側邊緣',cardType:'卡片類型',braillePosition:'點字位置',showBraille:'顯示點字預覽',showBrailleDesc:'顯示在卡片畫面上',accessibilitySettings:'輔助設定',highContrast:'高對比模式',highContrastDesc:'提升文字可讀性',largeCardNumber:'放大卡號',largeCardNumberDesc:'放大卡片數字',tactileEdge:'觸覺邊緣標記',tactileEdgeDesc:'卡片邊緣的實體缺口',screenReader:'螢幕閱讀標籤',screenReaderDesc:'點選時朗讀卡片類型',previewCard:'預覽卡片',savedDesign:'已儲存設計',previewNote:'列印或返回編輯器前，先預覽已儲存的卡片。',printCard:'列印卡片',returnToDesign:'返回設計',goHome:'回首頁',reset:'重設',saveCard:'儲存卡片 ->',dragHelp:'拖曳符號可移動，使用控制點可調整大小或移除。',previewRefreshed:'預覽已更新',themeApplied:'已套用主題',symbolAdded:'已新增符號',resetComplete:'已重設',cardSaved:'卡片已儲存',brailleType:'點字類型',braillePos:'點字位置',applied:'已套用',All:'全部',Mascot:'吉祥物',Taiwan:'台灣',Nature:'自然',Fun:'趣味',University:'大學',Artist:'藝術',Cute:'可愛',Student:'學生',Disabled:'無障礙',EasyCard:'悠遊卡',TopLeft:'左上',TopRight:'右上',BottomLeft:'左下',BottomRight:'右下',RoundedCorner:'圓角',RoundedSideNotch:'圓弧側邊缺口',RoundedCornerScoop:'圓角凹口',LeftEdgeOnly:'僅左側邊緣',NTPUCampus:'北大校園',SanxiaOldStreet:'三峽老街',Ximending:'西門町',WulaiWaterfall:'烏來瀑布',YinggeCeramic:'鶯歌陶瓷',IndigoDye:'藍染',CherryBlossom:'櫻花',RaoheNightMarket:'饒河夜市',Taipei101:'台北 101'}
+};
+let uiLang=new URLSearchParams(location.search).get('lang')==='en'?'en':'zh';
+function tx(k){return (I18N[uiLang]&&I18N[uiLang][k])||I18N.en[k]||k}
+function setCustomizerLanguage(next){uiLang=next==='en'?'en':'zh';document.documentElement.lang=uiLang==='zh'?'zh-Hant':'en';document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=tx(el.dataset.i18n)});renderChips();renderStickerGrid();renderThemes();renderNotches();renderBrailleControls()}
+window.setCustomizerLanguage=setCustomizerLanguage;
+addEventListener('message',e=>{if(e.data&&e.data.type==='easycard-language')setCustomizerLanguage(e.data.language)});
+const iconPaths={
+ bank:'M4 9h24v3H4V9zm2 5h4v10H6V14zm6 0h4v10h-4V14zm6 0h4v10h-4V14zm6 0h4v10h-4V14zM3 26h26v3H3v-3zM16 2l13 6H3L16 2z',
+ paw:'M8 14c2.2 0 4 2.2 4 5 0 3-1.8 5-4 5s-4-2-4-5c0-2.8 1.8-5 4-5zm16 0c2.2 0 4 2.2 4 5 0 3-1.8 5-4 5s-4-2-4-5c0-2.8 1.8-5 4-5zM12 4c2 0 3.5 2 3.5 4.5S14 13 12 13 8.5 11 8.5 8.5 10 4 12 4zm8 0c2 0 3.5 2 3.5 4.5S22 13 20 13s-3.5-2-3.5-4.5S18 4 20 4zM16 17c4.7 0 8 4.3 8 8 0 2.2-1.7 3-3.8 2.4-1.8-.5-2.6-1.1-4.2-1.1s-2.4.6-4.2 1.1C9.7 28 8 27.2 8 25c0-3.7 3.3-8 8-8z',
+ cup:'M8 5h16v3h3c2.5 0 4 1.8 4 4.2 0 4-3 6.2-7 6.5-1.2 3-3.7 5-8 5s-6.8-2-8-5C5 18.3 2 16.1 2 12.2 2 9.8 3.5 8 6 8h2V5zm16 6v5c2.4-.2 4-1.4 4-3.8 0-.8-.4-1.2-1-1.2h-3zM6 11c-.6 0-1 .4-1 1.2 0 2.3 1.5 3.5 3 3.8v-5H6zm5 17h10v3H11v-3z',
+ temple:'M16 3l12 7v3H4v-3l12-7zM7 15h6v12H7V15zm9 0h6v12h-6V15zm-12 14h24v3H4v-3z',
+ flag:'M7 5h3v24H7V5zm4 1h16v11H11V6z',
+ flower:'M16 13c4-8 12-3 7 4 8 1 6 10-2 8-2 8-11 5-8-2-8 1-10-8-2-8-5-7 3-12 7-4zm0 4a3 3 0 100 6 3 3 0 000-6z',
+ tree:'M16 3c5 5 8 10 8 15a8 8 0 01-7 7v5h-3v-5a8 8 0 01-7-7c0-5 3-10 9-15z',
+ cloud:'M10 22h16a5 5 0 000-10 8 8 0 00-15-2 6 6 0 00-1 12z',
+ mountain:'M2 28L12 9l5 8 3-5 10 16H2zm11-7l3 5H9l4-5z',
+ waves:'M2 11c4-3 7 3 11 0s7 3 11 0 5-1 8 0v4c-4-3-7 3-11 0s-7-3-11 0-5 1-8 0v-4zm0 9c4-3 7 3 11 0s7 3 11 0 5-1 8 0v4c-4-3-7 3-11 0s-7-3-11 0-5 1-8 0v-4z',
+ star:'M16 3l4 8 9 1-6.5 6 1.8 9L16 22.5 7.7 27l1.8-9L3 12l9-1 4-8z',
+ lantern:'M11 4h10v3h3v16h-3v3H11v-3H8V7h3V4zm1 7h8v9h-8v-9z',
+ brush:'M23 3l6 6-13 13-6-6L23 3zM8 18l6 6c-3 4-8 6-12 5 3-2 3-5 6-11z',
+ bolt:'M18 2L5 18h10l-2 12 14-18H17l1-10z'
+};
+const STICKER_DATA=[
+ ['All','Mascot','Taiwan','Nature','Fun'],
+ [{k:'bebe',c:'Mascot',img:true},{k:'peilar',c:'Mascot',img:true},{k:'paw',c:'Mascot'},{k:'cup',c:'Mascot'},{k:'temple',c:'Taiwan'},{k:'flag',c:'Taiwan'},{k:'flower',c:'Nature'},{k:'tree',c:'Nature'},{k:'cloud',c:'Nature'},{k:'mountain',c:'Taiwan'},{k:'waves',c:'Nature'},{k:'star',c:'Fun'},{k:'lantern',c:'Taiwan'},{k:'brush',c:'Fun'},{k:'bolt',c:'Fun'}]
+];
+const themes=[
+ {name:'NTPU Campus',cat:['All','University'],colors:['#CDECFF','#8BC46A','#0C3568'],type:'photo',img:assetPath('images/NTPUCampus.jpg')},
+ {name:'Sanxia Old Street',cat:['All','Taiwan'],colors:['#D27B47','#8E3F24','#F3C18C'],type:'photo',img:assetPath('images/Sanxiaoldstreet.webp')},
+ {name:'Ximending',cat:['All','Taiwan'],colors:['#1A1A2E','#D6428C','#4EA3E7'],type:'photo',img:assetPath('images/Ximending.jpg')},
+ {name:'Wulai Waterfall',cat:['All','Taiwan','Nature'],colors:['#2C7873','#52AB98','#C8D8E4'],type:'photo',img:assetPath('images/WulaiWaterfall.jpg')},
+ {name:'Yingge Ceramic',cat:['All','Taiwan','Artist'],colors:['#C8D8E4','#8C6B51','#E8D9C2'],type:'photo',img:assetPath('images/YinggeCeramics.jpg')},
+ {name:'Indigo Dye',cat:['All','Taiwan','Artist'],colors:['#14396D','#4EA3E7','#F8F0E3'],type:'photo',img:assetPath('images/Indigodye.jpg')},
+ {name:'Cherry Blossom',cat:['All','Cute','Nature'],colors:['#FFDEE9','#B5EAEA','#FFB7C5'],type:'photo',img:assetPath('images/Daxiongcherryblossom.jpg')},
+ {name:'Raohe Night Market',cat:['All','Taiwan'],colors:['#FF6B6B','#FFE66D','#4ECDC4'],type:'photo',img:assetPath('images/Raohenightmarket.jpg')},
+ {name:'Taipei 101',cat:['All','Taiwan'],colors:['#F8F0E3','#FFC8A2','#D4A5A5'],type:'photo',img:assetPath('images/Taipei101.jpg')}
+];
+const themeLabelKeys={'NTPU Campus':'NTPUCampus','Sanxia Old Street':'SanxiaOldStreet','Ximending':'Ximending','Wulai Waterfall':'WulaiWaterfall','Yingge Ceramic':'YinggeCeramic','Indigo Dye':'IndigoDye','Cherry Blossom':'CherryBlossom','Raohe Night Market':'RaoheNightMarket','Taipei 101':'Taipei101'};
+function themeLabel(t){return tx(themeLabelKeys[t.name]||t.name)}
+const notchLabels=['RoundedCorner','RoundedSideNotch','RoundedCornerScoop'];
+const positions=['LeftEdgeOnly'];
+const BRAILLE_TYPE_NAMES=['Student','Disabled','EasyCard'];
+const brailleWords={Student:['S','T','U'],Disabled:['D','I','S'],EasyCard:['E','A','S','Y']};
+const brailleMap={A:[1,0,0,0,0,0],D:[1,0,1,1,0,0],E:[1,0,0,1,0,0],I:[0,1,1,0,0,0],N:[1,1,1,0,1,0],S:[0,1,1,1,0,0],T:[0,1,1,1,1,0],U:[1,0,0,0,1,1],Y:[1,1,0,1,1,1]};
+let selCat='All',themeCat='All',selTheme=0,selSticker=null,items=[],id=0,selNotch=0,selPos=0,selBrailleType=0,selBraillePos=0,brailleOn=true,bandOn=true,bandColor=C.green,drag=null,resize=null;
+function svg(k){return `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="${iconPaths[k]}"/></svg>`}
+function symbolMarkup(k){if(k==='bebe')return`<img src="${BEBE_SRC}" alt="Bebe">`;if(k==='peilar')return`<img src="${PEILAR_SRC}" alt="Peilar">`;return svg(k)}
+bankIcon.innerHTML=svg('bank');
+function goBack(){if(window.CardCustomizer){CardCustomizer.postMessage('back')}else if(window.parent&&window.parent!==window){window.parent.postMessage('easycard-customizer-back','*')}else{history.back()}}
+function fillCover(ctx,img,w,h){const s=Math.max(w/img.width,h/img.height),nw=img.width*s,nh=img.height*s;ctx.drawImage(img,(w-nw)/2,(h-nh)/2,nw,nh)}
+function paintThemeBase(ctx,w,h,t){let [a,b,c]=t.colors;let g=ctx.createLinearGradient(0,0,w,h);g.addColorStop(0,a);g.addColorStop(.62,b);g.addColorStop(1,c);ctx.fillStyle=g;ctx.fillRect(0,0,w,h);if(t.type==='street'){ctx.fillStyle='#d49a72';ctx.fillRect(0,0,w,h);for(let i=0;i<10;i++){const x=i*w/10;ctx.fillStyle=i%2?'#a64d2d':'#73301e';ctx.fillRect(x,h*.08,w*.13,h*.58);ctx.fillStyle='rgba(255,232,198,.78)';ctx.fillRect(x+w*.025,h*.2,w*.055,h*.09);ctx.fillRect(x+w*.025,h*.34,w*.055,h*.09)}ctx.fillStyle='rgba(70,42,24,.4)';for(let i=0;i<10;i++){ctx.beginPath();ctx.arc(i*w/9,h*.75,w*.08,Math.PI,0);ctx.fill()}}}
+function paintCardOverlay(ctx,w,h,t){if(!bandOn)return;ctx.save();ctx.globalAlpha=t.img ? 0.74 : 1;ctx.fillStyle=bandColor;ctx.beginPath();ctx.moveTo(0,h*.68);ctx.quadraticCurveTo(w*.28,h*.52,w*.52,h*.69);ctx.quadraticCurveTo(w*.77,h*.84,w,h*.62);ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.fill();ctx.restore()}
+function drawBg(canvas,t){const dpr=devicePixelRatio||1,w=canvas.clientWidth||340,h=canvas.clientHeight||214;canvas.width=w*dpr;canvas.height=h*dpr;const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);paintThemeBase(ctx,w,h,t);if(t.img){const img=new Image();img.onload=()=>{ctx.clearRect(0,0,w,h);fillCover(ctx,img,w,h);ctx.fillStyle='rgba(0,0,0,.16)';ctx.fillRect(0,0,w,h);paintCardOverlay(ctx,w,h,t)};img.onerror=()=>paintCardOverlay(ctx,w,h,t);img.src=t.img}else{paintCardOverlay(ctx,w,h,t)}}
+function redraw(){drawBg(bg,themes[selTheme]);renderThemes();renderBraille()}
+function renderChips(){stickerChips.innerHTML=STICKER_DATA[0].map(c=>`<button class="chip ${c===selCat?'on':''}" onclick="selCat='${c}';renderChips();renderStickerGrid()">${tx(c)}</button>`).join('');const cats=['All',...new Set(themes.flatMap(t=>t.cat).filter(c=>c!=='All'))];themeChips.innerHTML=cats.map(c=>`<button class="chip ${c===themeCat?'on':''}" onclick="themeCat='${c}';renderChips();renderThemes()">${tx(c)}</button>`).join('')}
+function renderStickerGrid(){stickerGrid.innerHTML=STICKER_DATA[1].filter(s=>selCat==='All'||s.c===selCat).map(s=>`<button class="tile" onclick="addSticker('${s.k}')">${symbolMarkup(s.k)}</button>`).join('')}
+function renderThemes(){themeGrid.innerHTML='';themes.filter(t=>themeCat==='All'||t.cat.includes(themeCat)).forEach(t=>{const i=themes.indexOf(t),el=document.createElement('button');el.className='theme '+(i===selTheme?'sel':'');el.innerHTML=t.img?`<img src="${t.img}" alt=""><canvas style="display:none"></canvas><div>${themeLabel(t)}</div>`:'<canvas></canvas><div>'+themeLabel(t)+'</div>';el.onclick=()=>{selTheme=i;redraw();toast(tx('themeApplied'))};themeGrid.appendChild(el);if(t.img){const img=el.querySelector('img');img.onerror=()=>{img.style.display='none';const c=el.querySelector('canvas');c.style.display='block';drawBg(c,t)}}else{requestAnimationFrame(()=>drawBg(el.querySelector('canvas'),t))}})}
+function renderNotches(){notchGrid.innerHTML=notchLabels.map((n,i)=>`<button class="option ${i===selNotch?'sel':''}" onclick="selNotch=${i};applyNotch();renderNotches()">${tx(n)}</button>`).join('');notchPos.innerHTML=`<button class="sel">${tx('LeftEdgeOnly')}</button>`}
+function renderBrailleControls(){brailleTypes.innerHTML=BRAILLE_TYPE_NAMES.map((n,i)=>`<button class="option ${i===selBrailleType?'sel':''}" onclick="selBrailleType=${i};renderBrailleControls();renderBraille();toast(tx('brailleType')+': '+tx('${n}'))">${tx(n)}</button>`).join('');const posKeys=['TopLeft','TopRight','BottomLeft','BottomRight'];braillePos.innerHTML=posKeys.map((p,i)=>`<button class="${i===selBraillePos?'sel':''}" onclick="selBraillePos=${i};renderBrailleControls();renderBraille();toast(tx('braillePos')+': '+tx('${p}'))">${tx(p)}</button>`).join('')}
+function applyNotch(){cardInner.className='card-inner';if(selNotch===0){cardInner.classList.add('edge-rounded')}else if(selNotch===1){cardInner.classList.add('edge-side')}else{cardInner.classList.add('edge-scoop')}toast(tx(notchLabels[selNotch])+' '+tx('applied'))}
+function positionBraille(el){const p=['Top-Left','Top-Right','Bottom-Left','Bottom-Right'][selBraillePos];el.style.top=p.includes('Top')?'42px':'auto';el.style.bottom=p.includes('Bottom')?'42px':'auto';el.style.left=p.includes('Left')?'16px':'auto';el.style.right=p.includes('Right')?'16px':'auto'}
+function renderBrailleInto(el){el.innerHTML='';positionBraille(el);if(!brailleOn)return;const word=brailleWords[BRAILLE_TYPE_NAMES[selBrailleType]];word.forEach(ch=>{let cell=document.createElement('div');cell.className='cell';(brailleMap[ch]||[0,0,0,0,0,0]).forEach(on=>{let d=document.createElement('span');d.className='dot '+(on?'':'off');cell.appendChild(d)});el.appendChild(cell)})}
+function renderBraille(){renderBrailleInto(braille)}
+function addSticker(k){const s={id:'s'+(++id),k,x:35+Math.random()*25,y:32+Math.random()*20,size:46,rot:0,color:C.navy};items.push(s);paintSticker(s);select(s.id);toast(tx('symbolAdded'))}
+function paintSticker(s){let el=document.getElementById(s.id);if(!el){el=document.createElement('div');el.id=s.id;el.className='sticker';el.innerHTML=symbolMarkup(s.k)+'<button class="handle close">x</button><button class="handle resize">↗</button>';el.querySelector('.close').onclick=e=>{e.stopPropagation();remove(s.id)};el.querySelector('.resize').onpointerdown=e=>startResize(e,s.id);el.onpointerdown=e=>startDrag(e,s.id);stickersLayer().appendChild(el)}el.style.left=s.x+'%';el.style.top=s.y+'%';el.style.setProperty('--size',s.size+'px');el.style.setProperty('--rot',s.rot+'deg');el.style.color=s.color}
+function stickersLayer(){return document.getElementById('stickers')}
+function select(sid){selSticker=sid;document.querySelectorAll('.sticker').forEach(e=>e.classList.toggle('selected',e.id===sid));const s=items.find(x=>x.id===sid);if(!s)return;size.value=s.size;sizeVal.textContent=Math.round(s.size);rotate.value=s.rot;rotateVal.textContent=s.rot+' deg';renderPalette(s.color)}
+function remove(sid){items=items.filter(x=>x.id!==sid);document.getElementById(sid)?.remove();selSticker=null}
+function removeSelected(){if(selSticker)remove(selSticker)}
+function duplicateSticker(){const s=items.find(x=>x.id===selSticker);if(!s)return;const n={...s,id:'s'+(++id),x:s.x+6,y:s.y+6};items.push(n);paintSticker(n);select(n.id)}
+function startDrag(e,sid){if(e.target.tagName==='BUTTON')return;e.preventDefault();select(sid);let r=stickersLayer().getBoundingClientRect(),s=items.find(x=>x.id===sid);drag={sid,r,sx:e.clientX,sy:e.clientY,ox:s.x,oy:s.y};document.addEventListener('pointermove',moveDrag);document.addEventListener('pointerup',stopDrag)}
+function moveDrag(e){if(!drag)return;e.preventDefault();let s=items.find(x=>x.id===drag.sid);s.x=Math.max(6,Math.min(94,drag.ox+(e.clientX-drag.sx)/drag.r.width*100));s.y=Math.max(6,Math.min(94,drag.oy+(e.clientY-drag.sy)/drag.r.height*100));paintSticker(s)}
+function stopDrag(){drag=null;document.removeEventListener('pointermove',moveDrag);document.removeEventListener('pointerup',stopDrag)}
+function startResize(e,sid){e.preventDefault();e.stopPropagation();let s=items.find(x=>x.id===sid);resize={sid,sy:e.clientY,os:s.size};document.addEventListener('pointermove',moveResize);document.addEventListener('pointerup',stopResize)}
+function moveResize(e){if(!resize)return;e.preventDefault();let s=items.find(x=>x.id===resize.sid);s.size=Math.max(20,Math.min(84,resize.os+(e.clientY-resize.sy)*.5));paintSticker(s);select(s.id)}
+function stopResize(){resize=null;document.removeEventListener('pointermove',moveResize);document.removeEventListener('pointerup',stopResize)}
+size.oninput=()=>{let s=items.find(x=>x.id===selSticker);if(s){s.size=+size.value;sizeVal.textContent=size.value;paintSticker(s)}};
+rotate.oninput=()=>{let s=items.find(x=>x.id===selSticker);if(s){s.rot=+rotate.value;rotateVal.textContent=rotate.value+' deg';paintSticker(s)}};
+function renderPalette(active=C.navy){const cols=[C.pink,C.blue,C.green,C.yellow,C.navy,C.gray];palette.innerHTML=cols.map(c=>`<button class="sw ${c===active?'sel':''}" style="background:${c}" onclick="setColor('${c}')"></button>`).join('')+'<input type="color" value="'+active+'" oninput="setColor(this.value)">'}
+function setColor(c){let s=items.find(x=>x.id===selSticker);if(s){s.color=c;paintSticker(s);renderPalette(c)}}
+function renderBandPalette(){const cols=[C.green,C.blue,C.pink,C.yellow,C.navy,'#244b36','#ffffff'];bandPalette.innerHTML=cols.map(c=>`<button class="sw ${c===bandColor?'sel':''}" style="background:${c}" onclick="setBandColor('${c}')"></button>`).join('')+'<input type="color" value="'+bandColor+'" oninput="setBandColor(this.value)">'}
+function setBandColor(c){bandColor=c;renderBandPalette();redraw()}
+function toggleBand(b){bandOn=!bandOn;b.classList.toggle('on',bandOn);redraw()}
+function toggleBraille(b){brailleOn=!brailleOn;b.classList.toggle('on',brailleOn);renderBraille()}
+function toggleSwitch(b){b.classList.toggle('on')}
+function resetAll(){items=[];stickersLayer().innerHTML='';selTheme=0;selNotch=0;selPos=0;bandOn=true;bandColor=C.green;bandSwitch.classList.add('on');renderBandPalette();applyNotch();redraw();toast(tx('resetComplete'))}
+function renderPreview(){previewCard.className='preview-card';if(selNotch===1)previewCard.classList.add('edge-side');if(selNotch===2)previewCard.classList.add('edge-scoop');drawBg(previewBg,themes[selTheme]);previewStickers.innerHTML='';items.forEach(s=>{let el=document.createElement('div');el.className='preview-symbol';el.innerHTML=symbolMarkup(s.k);el.style.left=s.x+'%';el.style.top=s.y+'%';el.style.setProperty('--size',s.size+'px');el.style.setProperty('--rot',s.rot+'deg');el.style.color=s.color;previewStickers.appendChild(el)});renderBrailleInto(previewBraille)}
+function showPreview(){renderPreview();document.body.classList.add('preview-mode');scrollTo(0,0);toast(tx('cardSaved'))}
+function returnToDesign(){document.body.classList.remove('preview-mode');scrollTo(0,0)}
+function printCard(){renderPreview();window.print()}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.getElementById(t.dataset.panel).classList.add('active')});
+setCustomizerLanguage(uiLang);renderPalette();renderBandPalette();setTimeout(()=>{redraw();addSticker('flower');addSticker('cloud')},60);addEventListener('resize',()=>setTimeout(redraw,80));
+</script>
+</body>
+</html>

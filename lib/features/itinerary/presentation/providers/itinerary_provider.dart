@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:latlong2/latlong.dart' hide Path;
 import '../../data/services/gemini_service.dart';
 import '../../domain/entities/itinerary_request.dart';
 import '../../domain/entities/itinerary_result.dart';

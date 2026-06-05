@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -8,7 +9,12 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../widgets/bottom_nav_bar.dart';
 
 class SecondhandMarketplacePage extends StatefulWidget {
-  const SecondhandMarketplacePage({super.key});
+  final bool returnToStudentArea;
+
+  const SecondhandMarketplacePage({
+    super.key,
+    this.returnToStudentArea = false,
+  });
 
   @override
   State<SecondhandMarketplacePage> createState() =>
@@ -182,6 +188,9 @@ class _SecondhandMarketplacePageState extends State<SecondhandMarketplacePage> {
               currentTab: _tab,
               text: t,
               language: _language,
+              onBack: widget.returnToStudentArea
+                  ? () => context.go('/feature/student-area')
+                  : () => context.go('/'),
               onTabSelected: _handleTabPress,
               onLanguageSelected: (language) =>
                   setState(() => _language = language),
@@ -211,6 +220,7 @@ class _MarketHeader extends StatelessWidget {
   final _MarketTab currentTab;
   final String Function(String key) text;
   final _MarketLanguage language;
+  final VoidCallback onBack;
   final ValueChanged<_MarketTab> onTabSelected;
   final ValueChanged<_MarketLanguage> onLanguageSelected;
 
@@ -219,6 +229,7 @@ class _MarketHeader extends StatelessWidget {
     required this.currentTab,
     required this.text,
     required this.language,
+    required this.onBack,
     required this.onTabSelected,
     required this.onLanguageSelected,
   });
@@ -246,17 +257,17 @@ class _MarketHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
+          SizedBox(
             width: 38,
             height: 38,
-            decoration: BoxDecoration(
-              color: _MarketColors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.menu_book_rounded,
-              color: _MarketColors.primary,
-              size: 22,
+            child: IconButton(
+              onPressed: onBack,
+              padding: EdgeInsets.zero,
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: _MarketColors.white,
+                size: 22,
+              ),
             ),
           ),
           const SizedBox(width: 12),

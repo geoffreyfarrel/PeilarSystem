@@ -5,10 +5,7 @@ import '../providers/language_provider.dart';
 class LanguageToggle extends ConsumerWidget {
   final bool darkMode;
 
-  const LanguageToggle({
-    super.key,
-    this.darkMode = false,
-  });
+  const LanguageToggle({super.key, this.darkMode = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,7 +14,9 @@ class LanguageToggle extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: darkMode ? Colors.white.withValues(alpha: 0.18) : Colors.grey.shade200,
+        color: darkMode
+            ? Colors.white.withValues(alpha: 0.18)
+            : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(
@@ -68,15 +67,15 @@ class _ToggleItem extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: selected
-              ? const Color(0xFF0079BF)
-              : Colors.transparent,
+          color: selected ? const Color(0xFF0079BF) : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : selectedColor.withValues(alpha: 0.85),
+            color: selected
+                ? Colors.white
+                : selectedColor.withValues(alpha: 0.85),
             fontSize: 12,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
           ),
