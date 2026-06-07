@@ -5,6 +5,7 @@ class StudentAccount {
   final String studentId;
   final String name;
   final String email;
+  final String password;
   final String major;
   final bool isBound;
 
@@ -12,6 +13,7 @@ class StudentAccount {
     required this.studentId,
     required this.name,
     required this.email,
+    required this.password,
     required this.major,
     this.isBound = true,
   });

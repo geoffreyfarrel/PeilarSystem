@@ -144,6 +144,7 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'studentId': '學號',
     'studentName': '姓名',
     'studentEmail': '學校信箱',
+    'studentPassword': '密碼',
     'loginBind': '登入並綁定',
     'logout': '登出',
 
@@ -340,6 +341,7 @@ const Map<AppLanguage, Map<String, String>> appText = {
     'studentId': 'Student ID',
     'studentName': 'Name',
     'studentEmail': 'School Email',
+    'studentPassword': 'Password',
     'loginBind': 'Login & Bind',
     'logout': 'Logout',
 

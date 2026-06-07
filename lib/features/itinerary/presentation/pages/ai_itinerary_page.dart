@@ -805,8 +805,11 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
               }),
               borderRadius: BorderRadius.circular(16),
               child: Container(
-                constraints: const BoxConstraints(minHeight: 64),
-                padding: const EdgeInsets.all(10),
+                constraints: const BoxConstraints(minHeight: 80),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: selected ? _softPink : Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -814,31 +817,36 @@ class _AiItineraryPageState extends ConsumerState<AiItineraryPage> {
                     color: selected ? _pink : Colors.grey.shade300,
                   ),
                 ),
-                child: Row(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      selected
-                          ? Icons.check_box
-                          : Icons.check_box_outline_blank,
-                      color: selected ? _pink : Colors.grey.shade700,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Icon(
-                      option.$3,
-                      color: selected ? _pink : Colors.grey.shade700,
-                      size: 22,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        option.$2,
-                        style: TextStyle(
-                          color: selected ? _pink : Colors.grey.shade800,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          height: 1.15,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          selected
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                          color: selected ? _pink : Colors.grey.shade500,
+                          size: 18,
                         ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          option.$3,
+                          color: selected ? _pink : Colors.grey.shade600,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      option.$2,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: selected ? _pink : Colors.grey.shade800,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        height: 1.2,
                       ),
                     ),
                   ],

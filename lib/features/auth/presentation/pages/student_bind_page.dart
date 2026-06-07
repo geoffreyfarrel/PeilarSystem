@@ -17,16 +17,20 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
   final studentIdController = TextEditingController();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final majorController = TextEditingController();
 
-  static const Color darkGreen = Color(0xFF0E9A33);
-  static const Color green = Color(0xFF0E9A33);
+  static const Color _red = Color(0xFFC6006E);
+  static const Color _blue = Color(0xFF0079BF);
+  static const Color _yellow = Color(0xFFEDA944);
+  static const Color _green = Color(0xFF0E9A33);
 
   @override
   void dispose() {
     studentIdController.dispose();
     nameController.dispose();
     emailController.dispose();
+    passwordController.dispose();
     majorController.dispose();
     super.dispose();
   }
@@ -35,9 +39,10 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
     final studentId = studentIdController.text.trim();
     final name = nameController.text.trim();
     final email = emailController.text.trim();
+    final password = passwordController.text.trim();
     final major = majorController.text.trim();
 
-    if (studentId.isEmpty || name.isEmpty || email.isEmpty || major.isEmpty) {
+    if (studentId.isEmpty || name.isEmpty || email.isEmpty || password.isEmpty || major.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields.')),
       );
@@ -48,6 +53,7 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
       studentId: studentId,
       name: name,
       email: email,
+      password: password,
       major: major,
     );
 
@@ -106,11 +112,7 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [darkGreen, green],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                        color: Colors.black,
                         borderRadius: BorderRadius.circular(28),
                       ),
                       child: Column(
@@ -124,7 +126,7 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
                             ),
                             child: const Icon(
                               Icons.school,
-                              color: darkGreen,
+                              color: Colors.black,
                               size: 44,
                             ),
                           ),
@@ -159,6 +161,7 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
                       label: text['studentId'] ?? 'Student ID',
                       hint: '411000000',
                       icon: Icons.badge,
+                      color: _red,
                     ),
                     const SizedBox(height: 14),
                     _InputField(
@@ -166,6 +169,7 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
                       label: text['studentName'] ?? 'Name',
                       hint: 'Your name',
                       icon: Icons.person,
+                      color: _blue,
                     ),
                     const SizedBox(height: 14),
                     _InputField(
@@ -173,6 +177,16 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
                       label: text['studentEmail'] ?? 'School Email',
                       hint: 'example@gm.ntpu.edu.tw',
                       icon: Icons.email,
+                      color: _yellow,
+                    ),
+                    const SizedBox(height: 14),
+                    _InputField(
+                      controller: passwordController,
+                      label: text['studentPassword'] ?? 'Password',
+                      hint: '••••••••',
+                      icon: Icons.lock,
+                      obscureText: true,
+                      color: _green,
                     ),
                     const SizedBox(height: 14),
                     _InputField(
@@ -180,6 +194,7 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
                       label: text['studentMajor'] ?? 'Major',
                       hint: 'e.g. Computer Science',
                       icon: Icons.school_outlined,
+                      color: _red,
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
@@ -195,7 +210,7 @@ class _StudentBindPageState extends ConsumerState<StudentBindPage> {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: darkGreen,
+                          backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -530,30 +545,35 @@ class _InputField extends StatelessWidget {
   final String label;
   final String hint;
   final IconData icon;
+  final bool obscureText;
+  final Color color;
 
   const _InputField({
     required this.controller,
     required this.label,
     required this.hint,
     required this.icon,
+    required this.color,
+    this.obscureText = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      obscureText: obscureText,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: const Color(0xFF0E9A33)),
+        prefixIcon: Icon(icon, color: color),
         labelText: label,
         hintText: hint,
         filled: true,
         fillColor: Colors.white,
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFF0E9A33)),
+          borderSide: BorderSide(color: color),
           borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFF0E9A33), width: 2),
+          borderSide: BorderSide(color: color, width: 2),
           borderRadius: BorderRadius.circular(12),
         ),
       ),

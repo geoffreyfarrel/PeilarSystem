@@ -2457,6 +2457,8 @@ class _StudentEasyCardPreview extends StatelessWidget {
 
   const _StudentEasyCardPreview({required this.isZh});
 
+  static const double _rightW = 185;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -2475,6 +2477,7 @@ class _StudentEasyCardPreview extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       child: Stack(
         children: [
+          // Blue gradient background
           Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
@@ -2487,181 +2490,176 @@ class _StudentEasyCardPreview extends StatelessWidget {
               child: CustomPaint(painter: const _CampusLinePainter()),
             ),
           ),
+          // White right panel
           Positioned(
             right: 0,
             top: 0,
             bottom: 0,
-            width: 220,
+            width: _rightW,
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.horizontal(
-                  left: Radius.circular(180),
-                ),
+                borderRadius: BorderRadius.horizontal(left: Radius.circular(120)),
               ),
             ),
           ),
+          // Left (blue) content — right-bounded so it never enters the white panel
           Positioned(
-            left: 28,
-            top: 26,
-            child: Row(
+            left: 18,
+            right: _rightW,
+            top: 0,
+            bottom: 0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Icons.school_outlined,
-                  color: Colors.white,
-                  size: 36,
-                ),
-                const SizedBox(width: 14),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 20),
+                Row(
                   children: [
-                    Text(
-                      isZh ? '國立大學' : 'NATIONAL UNIVERSITY',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    const Text(
-                      'NATIONAL UNIVERSITY',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
+                    const Icon(Icons.school_outlined, color: Colors.white, size: 24),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        isZh ? '國立大學' : 'NTPU',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.8,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          Positioned(
-            left: 30,
-            top: 92,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isZh ? '王小明' : 'WANG, XIAO-MING',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 9),
-                Text(
-                  isZh ? 'WANG, XIAO-MING' : 'Student',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
+                const Text(
+                  'NATIONAL UNIVERSITY',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Color(0xAAFFFFFF),
+                    fontSize: 8,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 14),
-                Row(
+                const Spacer(),
+                Text(
+                  isZh ? '王小明' : 'WANG,\nXIAO-MING',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  isZh ? 'WANG, XIAO-MING' : 'Student',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xCCFFFFFF),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 5,
+                  runSpacing: 4,
                   children: [
-                    _StudentCardPill(
-                      label: isZh ? '學生' : 'Student',
-                      color: const Color(0xFF1976D2),
-                      icon: null,
-                    ),
-                    const SizedBox(width: 8),
-                    _StudentCardPill(
+                    _MiniPill(label: isZh ? '學生' : 'Student', color: const Color(0xFF1976D2)),
+                    _MiniPill(
                       label: isZh ? '已綁定' : 'Bound',
                       color: const Color(0xFF32B56D),
                       icon: Icons.check_circle_outline,
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Text(
                   isZh ? '學生證號' : 'Student ID',
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  style: const TextStyle(color: Color(0xCCFFFFFF), fontSize: 10),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 const Text(
                   'A12345678',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 15,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
+                const SizedBox(height: 18),
               ],
             ),
           ),
+          // Right (white) content — fully within the white panel
           Positioned(
-            right: 36,
-            top: 38,
-            child: Column(
-              children: [
-                const Icon(
-                  Icons.blur_circular,
-                  color: Color(0xFFE6005C),
-                  size: 42,
-                ),
-                Text(
-                  isZh ? '悠遊卡' : 'EasyCard',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: _rightW,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(30, 22, 18, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.blur_circular, color: Color(0xFFE6005C), size: 36),
+                      const SizedBox(width: 6),
+                      Text(
+                        isZh ? '悠遊卡' : 'EasyCard',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            right: 36,
-            top: 138,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Balance (NT\$)',
-                  style: TextStyle(color: Color(0xFF666666), fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: const [
-                    Text(
-                      '1,250',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 44,
+                  const Spacer(),
+                  const Text(
+                    'Balance (NT\$)',
+                    style: TextStyle(color: Color(0xFF666666), fontSize: 12),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Text(
+                        '1,250',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 34,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(Icons.chevron_right, color: Color(0xFF777777), size: 22),
+                    ],
+                  ),
+                  const Spacer(),
+                  Container(
+                    width: double.infinity,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6005C),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      isZh ? '加值' : 'Top Up',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Icon(
-                      Icons.chevron_right,
-                      color: Color(0xFF777777),
-                      size: 28,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  width: 128,
-                  height: 42,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE6005C),
-                    borderRadius: BorderRadius.circular(999),
                   ),
-                  child: Text(
-                    isZh ? '加值' : 'Top Up',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -2670,36 +2668,29 @@ class _StudentEasyCardPreview extends StatelessWidget {
   }
 }
 
-class _StudentCardPill extends StatelessWidget {
+class _MiniPill extends StatelessWidget {
   final String label;
   final Color color;
   final IconData? icon;
 
-  const _StudentCardPill({required this.label, required this.color, this.icon});
+  const _MiniPill({required this.label, required this.color, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 32,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(999),
-      ),
+      height: 24,
+      padding: const EdgeInsets.symmetric(horizontal: 9),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(999)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, color: Colors.white, size: 18),
-            const SizedBox(width: 6),
+            Icon(icon, color: Colors.white, size: 13),
+            const SizedBox(width: 4),
           ],
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w900,
-            ),
+            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900),
           ),
         ],
       ),
@@ -2853,18 +2844,9 @@ class _FestivalReferencePage extends StatelessWidget {
         SizedBox(height: 10),
         _PickGrid(
           items: [
-            _PickSpec(
-              Icons.star_border_rounded,
-              'Best food festivals\nnear campus',
-            ),
-            _PickSpec(
-              Icons.directions_bus_rounded,
-              'EasyCard transport\ndeals',
-            ),
-            _PickSpec(
-              Icons.confirmation_number_outlined,
-              'Weekend events\nunder NT\$200',
-            ),
+            _PickSpec(Icons.star_border_rounded, 'Best food\nfestivals'),
+            _PickSpec(Icons.directions_bus_rounded, 'EasyCard\ntransport'),
+            _PickSpec(Icons.confirmation_number_outlined, 'Weekend\nevents'),
             _PickSpec(Icons.apartment_rounded, 'Campus\nspecials'),
           ],
         ),
@@ -2908,7 +2890,6 @@ class _FestivalHero extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 164,
-      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         gradient: const LinearGradient(
@@ -2920,12 +2901,9 @@ class _FestivalHero extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       child: Stack(
         children: [
-          Positioned.fill(
-            child: CustomPaint(painter: _FestivalLightsPainter()),
-          ),
-          Positioned(
-            left: 0,
-            top: 4,
+          Positioned.fill(child: CustomPaint(painter: _FestivalLightsPainter())),
+          Padding(
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -2933,7 +2911,7 @@ class _FestivalHero extends StatelessWidget {
                   'Sanxia Festivals',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 25,
+                    fontSize: 22,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -2941,69 +2919,56 @@ class _FestivalHero extends StatelessWidget {
                   'Culture. Food. Fun.',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 3),
                 const Text(
-                  'Discover local festivals\nin Sanxia, New Taipei.',
+                  'Discover local festivals in Sanxia, New Taipei.',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    height: 1.25,
-                    fontWeight: FontWeight.w600,
+                    color: Color(0xCCFFFFFF),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 12),
-                Container(
-                  height: 34,
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Explore Now',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                        ),
+                const Spacer(),
+                Row(
+                  children: [
+                    Container(
+                      height: 32,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(999),
                       ),
-                      SizedBox(width: 8),
-                      Icon(Icons.chevron_right, size: 20),
-                    ],
-                  ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Explore Now',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          SizedBox(width: 6),
+                          Icon(Icons.chevron_right, size: 18),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    const _HeroThumb(icon: Icons.celebration_rounded, color: Color(0xFFFF7043)),
+                    const SizedBox(width: 6),
+                    const _HeroThumb(icon: Icons.storefront_rounded, color: Color(0xFFFFC04D)),
+                    const SizedBox(width: 6),
+                    const _HeroThumb(icon: Icons.light_mode_rounded, color: Color(0xFFFF9800)),
+                  ],
                 ),
               ],
-            ),
-          ),
-          Positioned(
-            right: 0,
-            bottom: 8,
-            child: _HeroThumb(
-              icon: Icons.light_mode_rounded,
-              color: Color(0xFFFF9800),
-            ),
-          ),
-          Positioned(
-            right: 78,
-            bottom: 8,
-            child: _HeroThumb(
-              icon: Icons.storefront_rounded,
-              color: Color(0xFFFFC04D),
-            ),
-          ),
-          Positioned(
-            right: 156,
-            bottom: 8,
-            child: _HeroThumb(
-              icon: Icons.celebration_rounded,
-              color: Color(0xFFFF7043),
             ),
           ),
         ],
@@ -3021,14 +2986,14 @@ class _HeroThumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 70,
-      height: 56,
+      width: 52,
+      height: 44,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.36),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white, width: 2),
+        border: Border.all(color: Colors.white, width: 1.5),
       ),
-      child: Icon(icon, color: color, size: 30),
+      child: Icon(icon, color: color, size: 24),
     );
   }
 }
@@ -3393,29 +3358,33 @@ class _PickGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: items.map((item) {
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: items.asMap().entries.map((entry) {
+        final index = entry.key;
+        final item = entry.value;
         return Expanded(
           child: Container(
-            height: 58,
-            margin: const EdgeInsets.only(right: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 9),
+            margin: EdgeInsets.only(right: index < items.length - 1 ? 8 : 0),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(9),
+              borderRadius: BorderRadius.circular(10),
               border: Border.all(color: const Color(0xFFE1E1E1)),
             ),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(item.icon, color: const Color(0xFFE6005C), size: 25),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    item.label,
-                    style: const TextStyle(
-                      fontSize: 10.5,
-                      height: 1.22,
-                      fontWeight: FontWeight.w700,
-                    ),
+                Icon(item.icon, color: const Color(0xFFE6005C), size: 26),
+                const SizedBox(height: 6),
+                Text(
+                  item.label,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    height: 1.3,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -4657,8 +4626,7 @@ class _LaundryLocationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 82,
-      padding: const EdgeInsets.symmetric(horizontal: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -4878,6 +4846,8 @@ class _StatusPill extends StatelessWidget {
       ),
       child: Text(
         label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           color: color,
           fontSize: 12,
@@ -4929,7 +4899,7 @@ class _LaundryMachineGrid extends StatelessWidget {
         crossAxisCount: 3,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
-        childAspectRatio: 1.08,
+        childAspectRatio: 0.78,
       ),
       itemBuilder: (context, index) =>
           _LaundryMachineTile(spec: machines[index]),
@@ -4962,7 +4932,7 @@ class _LaundryMachineTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final selected = spec.status != 'Free';
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: selected ? spec.color.withValues(alpha: .04) : Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -4972,43 +4942,31 @@ class _LaundryMachineTile extends StatelessWidget {
               : const Color(0xFFE1E1E1),
         ),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             spec.type == 'Dryer'
                 ? Icons.dry_cleaning_outlined
                 : Icons.local_laundry_service_outlined,
             color: spec.color,
-            size: 28,
+            size: 24,
           ),
-          const SizedBox(width: 9),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  spec.number,
-                  style: const TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                Text(spec.type, style: const TextStyle(fontSize: 12)),
-                const SizedBox(height: 4),
-                _StatusPill(label: spec.status, color: spec.color),
-                const SizedBox(height: 4),
-                Text(
-                  spec.detail,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFF444444),
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(height: 4),
+          Text(
+            spec.number,
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+          ),
+          Text(spec.type, style: const TextStyle(fontSize: 11)),
+          const SizedBox(height: 3),
+          _StatusPill(label: spec.status, color: spec.color),
+          const SizedBox(height: 3),
+          Text(
+            spec.detail,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 9, color: Color(0xFF444444)),
           ),
         ],
       ),
