@@ -994,9 +994,7 @@ class _StudentFeatureCard extends StatelessWidget {
           height: 104,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFFE5F5EB),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFDDE7D7)),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
